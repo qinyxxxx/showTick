@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
  * Created by Yuxin Qin on 7/10/24
  */
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -24,7 +24,7 @@ public class UserController {
     @ResponseBody
     public User getUserById(@PathVariable Long id) {
 //        User user = userService.getById(id);
-        User user = userMapper.selectById(1);
+        User user = userMapper.selectById(id);
         return user;
     }
 
@@ -32,9 +32,8 @@ public class UserController {
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult register(@RequestParam String username,
-                                 @RequestParam String password,
-                                 @RequestParam String mobile) {
-        userService.register(username, password, mobile);
+                                 @RequestParam String password) {
+        userService.register(username, password);
         return CommonResult.success(null,"Register success");
     }
 

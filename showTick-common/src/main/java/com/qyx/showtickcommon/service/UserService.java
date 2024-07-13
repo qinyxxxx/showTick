@@ -13,7 +13,7 @@ public interface UserService extends IService<User> {
      * user register
      */
     @Transactional
-    void register(String username, String password, String mobile);
+    void register(String username, String password);
 
     User login(String username, String password);
 
