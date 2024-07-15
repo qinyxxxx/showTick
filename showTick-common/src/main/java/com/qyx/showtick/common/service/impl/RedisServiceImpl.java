@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 public class RedisServiceImpl implements RedisService {
-
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
@@ -29,7 +28,7 @@ public class RedisServiceImpl implements RedisService {
         return redisTemplate.opsForValue().get(key);
     }
 
-    public void deleteValue(String key) {
-        redisTemplate.delete(key);
+    public Boolean deleteValue(String key) {
+        return redisTemplate.delete(key);
     }
 }

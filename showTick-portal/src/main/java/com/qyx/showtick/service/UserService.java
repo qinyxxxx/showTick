@@ -1,4 +1,4 @@
-package com.qyx.showtick.common.service;
+package com.qyx.showtick.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.qyx.showtick.common.entity.User;
@@ -13,9 +13,15 @@ public interface UserService extends IService<User> {
      * user register
      */
     @Transactional
-    void register(String username, String password);
+    User register(String username, String password);
 
-    User login(String username, String password);
+    String login(String username, String password);
 
-    public User getByUsername(String username);
+    User geUserByUsername(String username);
+
+    /**
+     * 获取缓存服务
+     */
+    UserCacheService getCacheService();
+
 }

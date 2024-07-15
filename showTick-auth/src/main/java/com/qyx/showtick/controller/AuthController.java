@@ -1,17 +1,20 @@
 package com.qyx.showtick.controller;
 
 import com.qyx.showtick.common.api.CommonResult;
+import com.qyx.showtick.common.service.RedisService;
 import com.qyx.showtick.component.JwtUtil;
 import com.qyx.showtick.dto.LoginParam;
+import com.qyx.showtick.dto.LoginResponse;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -26,11 +29,13 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
+//    @Autowired
+//    private RedisTemplate<String, String> redisTemplate;
+
     @Autowired
-    private RedisTemplate<String, String> redisTemplate;
+    private RedisService redisService;
 
-
-//    @RequestMapping(value = "/login", method = RequestMethod.GET)
+//    @RequestMapping(value = "/login2", method = RequestMethod.POST)
 //    public CommonResult login(@RequestBody LoginParam authRequest) {
 //        try {
 //            Authentication authentication = authenticationManager.authenticate(
@@ -38,10 +43,24 @@ public class AuthController {
 //            );
 //            String token = jwtUtil.generateToken(authRequest.getUsername());
 //            redisTemplate.opsForValue().set(authRequest.getUsername(), token);
-//            return CommonResult.success(new AuthResponse(token));
+//            return CommonResult.success(new LoginResponse(token));
 //        } catch (AuthenticationException e) {
-////            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();//todo
+//            return CommonResult.failed();//todo
 //        }
 //    }
+
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public String login(@RequestParam String username, @RequestParam String password) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password));
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String token = jwtUtil.generateToken(userDetails.getUsername());
+            redisService.setValue(userDetails.getUsername(), token);
+            return token;
+        } catch (AuthenticationException e) {
+            throw new RuntimeException("Invalid username or password");
+        }
+    }
 
 }

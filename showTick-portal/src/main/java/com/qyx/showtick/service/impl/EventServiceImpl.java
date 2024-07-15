@@ -1,10 +1,10 @@
-package com.qyx.showtick.common.service.impl;
+package com.qyx.showtick.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qyx.showtick.common.dto.EventParam;
 import com.qyx.showtick.common.entity.Event;
 import com.qyx.showtick.common.mapper.EventMapper;
-import com.qyx.showtick.common.service.EventService;
+import com.qyx.showtick.service.EventService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

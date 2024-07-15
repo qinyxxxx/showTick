@@ -1,11 +1,14 @@
-package com.qyx.showtick.common.controller;
+package com.qyx.showtick.controller;
 
 import com.qyx.showtick.common.api.CommonResult;
 import com.qyx.showtick.common.mapper.UserMapper;
-import com.qyx.showtick.common.service.UserService;
 import com.qyx.showtick.common.entity.User;
+import com.qyx.showtick.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Yuxin Qin on 7/10/24
@@ -42,15 +45,15 @@ public class UserController {
     @ResponseBody
     public CommonResult login(@RequestParam String username,
                               @RequestParam String password) {
-        User user = userService.login(username, password);
-        // todo token login
-        if (user == null) {
+        String token = userService.login(username, password);
+        if(token == null){
             return CommonResult.validateFailed("username or password incorrect");
         }
-//        Map<String, String> tokenMap = new HashMap<>();
-//        tokenMap.put("token", token);
-//        tokenMap.put("tokenHead", tokenHead);
-        return CommonResult.success(user, "login success");
+
+        Map<String, String> tokenMap = new HashMap<>();
+        tokenMap.put("token", token);
+        tokenMap.put("tokenHead", "Bearer ");
+        return CommonResult.success(tokenMap);
     }
 
 

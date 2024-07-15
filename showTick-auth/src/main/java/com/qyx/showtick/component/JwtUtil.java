@@ -35,6 +35,10 @@ public class JwtUtil {
                 .getBody();
     }
 
+    public boolean isTokenExpired(String token) {
+        return getClaimsFromToken(token).getExpiration().before(new Date());
+    }
+
     public boolean validateToken(String token) {
         Claims claims = getClaimsFromToken(token);
         return claims.getExpiration().after(new Date());

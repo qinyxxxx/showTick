@@ -1,4 +1,4 @@
-package com.qyx.showtick.common.service;
+package com.qyx.showtick.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.qyx.showtick.common.dto.EventParam;
