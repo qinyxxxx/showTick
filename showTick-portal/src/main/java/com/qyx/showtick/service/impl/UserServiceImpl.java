@@ -52,7 +52,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if(curUser != null){
             Asserts.fail("User already exists");
         }
-        System.err.println("user111");
+
         // new user, save
         User newUser = new User();
         newUser.setUsername(username);
@@ -87,7 +87,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         } catch (AuthenticationException e){
             LOGGER.warn("login error:{}", e.getMessage());
         }
-        return token; // todo return token
+        return token;
     }
 
     @Override

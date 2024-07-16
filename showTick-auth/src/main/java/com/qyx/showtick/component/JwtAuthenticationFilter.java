@@ -46,8 +46,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 //                String redisToken = (String) redisService.getValue(username);
+//                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
                 if (!jwtUtil.isTokenExpired(token)) {
-                    System.err.println("here I am22");
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());

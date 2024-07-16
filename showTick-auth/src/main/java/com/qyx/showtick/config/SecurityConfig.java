@@ -1,6 +1,6 @@
 package com.qyx.showtick.config;
 
-import com.qyx.showtick.CustomUserDetailsService;
+import com.qyx.showtick.service.CustomUserDetailsService;
 import com.qyx.showtick.component.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,8 +52,8 @@ public class SecurityConfig{
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new CustomUserDetailsService();
-    }
+//    @Bean
+//    public UserDetailsService userDetailsService() {
+//        return new CustomUserDetailsService();
+//    }
 }

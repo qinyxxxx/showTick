@@ -12,6 +12,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 //@EnableTransactionManagement
-@MapperScan("com.qyx.showtickcommon.mapper")
+@MapperScan("com.qyx.showtick.common.mapper")
 public class MyBatisPlusConfig {
 }
