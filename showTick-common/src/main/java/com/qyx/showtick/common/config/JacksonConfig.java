@@ -15,7 +15,6 @@ public class JacksonConfig {
     @Bean
     @ConditionalOnMissingBean(ObjectMapper.class)
     public ObjectMapper objectMapper() {
-        System.err.println("qyx111");
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);

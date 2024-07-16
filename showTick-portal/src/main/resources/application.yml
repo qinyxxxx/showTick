@@ -20,3 +20,21 @@ jwt:
   secret: aOQJk4V5wVsKzfoG9bqaJyKEnwQzZAQ0
   expiration: 3600000
   tokenHead: 'Bearer '
+
+secure:
+  ignored:
+    urls: #安全路径白名单
+      - /swagger-ui/
+      - /v3/api-docs/*
+      - /*/*.html
+      - /*/*.js
+      - /*/*.css
+      - /*/*.png
+      - /favicon.ico
+      - /actuator/**
+      - /druid/**
+      - /users/sso/**
+      - /home/**
+      - /product/**
+      - /brand/**
+      - /alipay/**

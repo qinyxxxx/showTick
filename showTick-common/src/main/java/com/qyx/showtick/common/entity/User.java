@@ -36,12 +36,12 @@ public class User implements Serializable {
     private String passwordHash;
     private String mobile;
     private String address;
-//    @DateTimeFormat
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime createTime;
-//    @DateTimeFormat
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
