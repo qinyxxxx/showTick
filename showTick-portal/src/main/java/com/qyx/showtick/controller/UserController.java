@@ -1,18 +1,17 @@
 package com.qyx.showtick.controller;
 
 import com.qyx.showtick.common.api.CommonResult;
-import com.qyx.showtick.common.mapper.UserMapper;
 import com.qyx.showtick.common.entity.User;
+import com.qyx.showtick.dto.UserDTO;
 import com.qyx.showtick.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by Yuxin Qin on 7/10/24
@@ -28,18 +27,6 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private UserMapper userMapper;
-
-//    @Operation(summary = "获取指定订单设置")
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @ResponseBody
-    public User getUserById(@PathVariable Long id) {
-//        User user = userService.getById(id);
-        User user = userMapper.selectById(id);
-        return user;
-    }
 
 //    @Operation(summary = "会员注册")
     @RequestMapping(value = "/sso/register", method = RequestMethod.POST)
@@ -69,7 +56,7 @@ public class UserController {
     // get current user info
     @RequestMapping(value = "/info", method = RequestMethod.GET)
     @ResponseBody
-    public CommonResult getAdminInfo(Principal principal) {
+    public CommonResult getProfile(Principal principal) {
         if(principal==null){
             return CommonResult.unauthorized(null);
         }
@@ -77,8 +64,22 @@ public class UserController {
         User user = userService.geUserByUsername(username);
         Map<String, Object> data = new HashMap<>();
         data.put("username", user.getUsername());
+        data.put("gender", user.getGender());
+        data.put("email", user.getEmail());
+        data.put("mobile", user.getMobile());
+        data.put("address", user.getAddress());
         return CommonResult.success(data);
     }
 
-
+    @RequestMapping(method = RequestMethod.PUT)
+    @ResponseBody
+    public CommonResult updateProfile(@RequestBody UserDTO userDTO, HttpServletRequest request) {
+        String token = request.getHeader(tokenHeader).substring(7);
+        int count = userService.updateProfile(token, userDTO);
+        if(count > 0){
+            return CommonResult.success(count);
+        } else {
+            return CommonResult.failed();
+        }
+    }
 }

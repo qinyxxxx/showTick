@@ -2,6 +2,7 @@ package com.qyx.showtick.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.qyx.showtick.common.entity.User;
+import com.qyx.showtick.dto.UserDTO;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -19,9 +20,9 @@ public interface UserService extends IService<User> {
 
     User geUserByUsername(String username);
 
-    /**
-     * 获取缓存服务
-     */
     UserCacheService getCacheService();
+
+    @Transactional
+    int updateProfile(String token, UserDTO userDTO);
 
 }

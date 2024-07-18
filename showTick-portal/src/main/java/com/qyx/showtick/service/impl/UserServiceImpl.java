@@ -7,8 +7,10 @@ import com.qyx.showtick.bo.CurrentUserDetail;
 import com.qyx.showtick.common.entity.User;
 import com.qyx.showtick.common.exception.Asserts;
 import com.qyx.showtick.common.mapper.UserMapper;
+import com.qyx.showtick.mapper.UserDTOMapper;
 import com.qyx.showtick.component.JwtUtil;
 import com.qyx.showtick.component.SpringUtil;
+import com.qyx.showtick.dto.UserDTO;
 import com.qyx.showtick.service.UserCacheService;
 import com.qyx.showtick.service.UserService;
 import org.slf4j.Logger;
@@ -110,6 +112,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public UserCacheService getCacheService() {
         return SpringUtil.getBean(UserCacheService.class);
+    }
+
+    @Override
+    public int updateProfile(String token, UserDTO userDTO) {
+        String username = jwtUtil.getUsernameFromToken(token);
+        User user = userMapper.selectOne(new QueryWrapper<User>().eq("username", username));
+        if (user != null) {
+            UserDTOMapper.INSTANCE.updateUserFromDto(userDTO, user);
+            getCacheService().setUser(user);
+            return userMapper.updateById(user);
+        }
+        return -1;
     }
 
 }

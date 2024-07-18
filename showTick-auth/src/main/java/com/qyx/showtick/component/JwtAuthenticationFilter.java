@@ -40,6 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         String token = request.getHeader(tokenHeader);
+        System.err.println("qyx11");
         if (token != null && token.startsWith(tokenHead)) {
             token = token.substring(tokenHead.length());
             String username = jwtUtil.getUsernameFromToken(token);
