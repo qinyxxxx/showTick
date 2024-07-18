@@ -44,7 +44,7 @@ public class UserController {
                               @RequestParam String password) {
         String token = userService.login(username, password);
         if(token == null){
-            return CommonResult.validateFailed("username or password incorrect");
+            return CommonResult.unauthorized("Username or password incorrect");
         }
 
         Map<String, String> tokenMap = new HashMap<>();

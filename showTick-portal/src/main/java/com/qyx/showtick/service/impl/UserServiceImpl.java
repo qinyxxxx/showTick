@@ -50,7 +50,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public User register(String username, String password) {
         // check if user exists
-        User curUser = geUserByUsername(username);
+        User curUser = userMapper.selectOne(new QueryWrapper<User>().eq("username", username));
         if(curUser != null){
             Asserts.fail("User already exists");
         }
@@ -72,12 +72,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         try{
             User user = geUserByUsername(username);
             if(user == null){
-                throw new UsernameNotFoundException("username or password incorrect");
+                throw new UsernameNotFoundException("Username or password incorrect");
             }
 
             UserDetails userDetails = new CurrentUserDetail(user);
             if(!passwordEncoder.matches(password, userDetails.getPassword())){
-                Asserts.fail("password error");
+                throw new UsernameNotFoundException("Password incorrect");
             }
 
             // todo user enable

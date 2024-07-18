@@ -18,22 +18,11 @@ public class EventController {
     @Autowired
     private EventService eventService;
 
-    @RequestMapping(method = RequestMethod.POST)
-    @ResponseBody
-    public CommonResult createEvent(@Validated @RequestBody EventParam eventParam) {
-        CommonResult commonResult;
-        int count = eventService.createEvent(eventParam);
-        if(count == 1){
-            commonResult = CommonResult.success(count);
-        } else {
-            commonResult = CommonResult.failed();
-        }
-        return commonResult;
-    }
-
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
     public CommonResult<Event> getItem(@PathVariable("id") Long id) {
         return CommonResult.success(eventService.getEventById(id));
     }
+
+
 }

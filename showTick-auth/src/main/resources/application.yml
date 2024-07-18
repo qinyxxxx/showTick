@@ -16,5 +16,5 @@ spring:
 jwt:
   tokenHeader: Authorization #JWT存储的请求头
   secret: aOQJk4V5wVsKzfoG9bqaJyKEnwQzZAQ0
-  expiration: 3600000
+  expiration: 86400000
   tokenHead: 'Bearer '

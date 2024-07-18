@@ -9,8 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by Yuxin Qin on 7/12/24
  */
 public interface EventService extends IService<Event> {
-    @Transactional
-    public int createEvent(EventParam eventParam);
 
-    public Event getEventById(Long id);
+
+    Event getEventById(Long id);
+
+
 }
