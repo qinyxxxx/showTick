@@ -1,7 +1,6 @@
-package com.qyx.showtick.common.dto;
+package com.qyx.showtick.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
+//import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -13,27 +12,25 @@ import java.time.LocalDateTime;
  */
 @Data
 @EqualsAndHashCode
-public class EventParam {
-    @NotEmpty
+public class EventAdminDTO {
+//    @NotEmpty
     private String name;
 
     private String description;
 
-    @NotEmpty
+//    @NotEmpty
     private LocalDateTime startTime;
 
-    @NotEmpty
+//    @NotEmpty
     private LocalDateTime endTime;
 
-    @NotEmpty
+//    @NotEmpty
     private String location;
-
-    @NotEmpty
-    @Min(value = 0)
-    private float price;
 
     private String performer;
 
     private int status;
     private Long categoryId;
+
+    private String posterUrl;
 }

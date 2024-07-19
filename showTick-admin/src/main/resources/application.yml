@@ -1,14 +1,40 @@
-#spring.application.name=showTick
 spring:
   application:
-    name: showTick-admin
+    name: showtick-admin
 
-#  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://127.0.0.1:3306/test?characterEncoding=utf-8
-#    username: root
-#    password: 123456
-#
-#mybatis-plus:
-#  configuration:
-#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/show_tick?characterEncoding=utf-8
+    username: root
+    password: 123456
+
+redis:
+  database: showtick
+  key:
+    user: 'user'
+  expire:
+    common: 86400 # 24hours
+
+jwt:
+  tokenHeader: Authorization #JWT存储的请求头
+  secret: aOQJk4V5wVsKzfoG9bqaJyKEnwQzZAQ0
+  expiration: 86400000
+  tokenHead: 'Bearer '
+
+secure:
+  ignored:
+    urls: #安全路径白名单
+      - /swagger-ui/
+      - /v3/api-docs/*
+      - /*/*.html
+      - /*/*.js
+      - /*/*.css
+      - /*/*.png
+      - /favicon.ico
+      - /actuator/**
+      - /druid/**
+      - /users/sso/**
+      - /admin/**
+      - /product/**
+      - /brand/**
+      - /alipay/**

@@ -9,17 +9,19 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Data;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * Created by Yuxin Qin on 7/9/24
+ * Created by Yuxin Qin on 7/19/24
  */
 @Data
-@TableName("event")
-public class Event implements Serializable {
+@TableName("eventCategory")
+public class EventCategory implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -27,14 +29,9 @@ public class Event implements Serializable {
     private Long id;
 
     private String name;
+
     private String description;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private String location;
-    private String performer;
-    private int status;
-    private String posterUrl;
-    private Long categoryId;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -44,4 +41,5 @@ public class Event implements Serializable {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime updateTime;
+
 }

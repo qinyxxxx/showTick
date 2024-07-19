@@ -15,26 +15,26 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * Created by Yuxin Qin on 7/9/24
+ * Created by Yuxin Qin on 7/19/24
  */
 @Data
-@TableName("event")
-public class Event implements Serializable {
+@TableName("ticket")
+public class Ticket implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    private String name;
-    private String description;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private String location;
-    private String performer;
-    private int status;
-    private String posterUrl;
-    private Long categoryId;
+    private Long eventId;
+    private Long seatCategoryId;
+
+    private float price;
+
+    private int totalQuantity;
+
+    private int remainingQuantity;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)

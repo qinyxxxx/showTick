@@ -1,6 +1,6 @@
 package com.qyx.showtick.component;
 
-import com.qyx.showtick.common.service.RedisService;
+//import com.qyx.showtick.common.service.RedisService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,9 +32,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private UserDetailsService userDetailsService;
-
-    @Autowired
-    private RedisService redisService;
+//
+//    @Autowired
+//    private RedisService redisService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
