@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@SpringBootTest(classes = ShowTickPortalApplication.class)
 class ShowTickPortalApplicationTests {
 
     @Autowired

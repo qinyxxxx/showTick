@@ -38,6 +38,7 @@ public class EventAdminServiceImpl extends ServiceImpl<EventMapper, Event> imple
         Event event = EventAdminDTOMapper.INSTANCE.toEntity(eventAdminDTO);
         event.setId(id);
         return eventMapper.updateById(event);
+//        return 1;
     }
 
     @Override

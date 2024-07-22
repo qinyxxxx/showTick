@@ -3,7 +3,7 @@ package com.qyx.showtick;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+@SpringBootTest(classes = ShowTickAdminApplication.class)
 class EventTickAdminApplicationTests {
 
 
