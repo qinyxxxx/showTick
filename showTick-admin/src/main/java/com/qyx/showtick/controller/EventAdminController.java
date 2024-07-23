@@ -22,6 +22,7 @@ public class EventAdminController {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public CommonResult createEvent(@Validated @RequestBody EventAdminDTO eventParam) {
+        System.err.println(eventParam.toString());
         CommonResult commonResult;
         int count = eventAdminService.createEvent(eventParam);
         if(count == 1){
