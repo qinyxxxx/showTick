@@ -14,8 +14,6 @@ public interface EventAdminService extends IService<Event> {
     @Transactional
     int createEvent(EventAdminDTO eventAdminDTO);
 
-
-
     Event getEventById(Long id);
 
     @Transactional

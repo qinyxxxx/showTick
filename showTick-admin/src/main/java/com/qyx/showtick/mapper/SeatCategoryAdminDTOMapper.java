@@ -9,8 +9,8 @@ import org.mapstruct.factory.Mappers;
  * Created by Yuxin Qin on 7/19/24
  */
 @Mapper
-public interface SeatCategoryAdminMapper {
-    SeatCategoryAdminMapper INSTANCE = Mappers.getMapper(SeatCategoryAdminMapper.class);
+public interface SeatCategoryAdminDTOMapper {
+    SeatCategoryAdminDTOMapper INSTANCE = Mappers.getMapper(SeatCategoryAdminDTOMapper.class);
 
     SeatCategoryAdminDTO toDTO(SeatCategory seatCategory);
 

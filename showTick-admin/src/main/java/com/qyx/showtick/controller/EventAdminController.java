@@ -22,7 +22,6 @@ public class EventAdminController {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public CommonResult createEvent(@Validated @RequestBody EventAdminDTO eventParam) {
-        System.err.println(eventParam.toString());
         CommonResult commonResult;
         int count = eventAdminService.createEvent(eventParam);
         if(count == 1){
@@ -44,7 +43,7 @@ public class EventAdminController {
     @ResponseBody
     public CommonResult updateEventById(@PathVariable Long id, @RequestBody EventAdminDTO eventAdminDTO) {
         int count = eventAdminService.updateEvent(id, eventAdminDTO);
-        if(count > 1){
+        if(count == 1){
             return CommonResult.success(count);
         }
         return CommonResult.failed("update failed");
