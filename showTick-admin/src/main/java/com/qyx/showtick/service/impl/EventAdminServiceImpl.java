@@ -22,6 +22,7 @@ public class EventAdminServiceImpl extends ServiceImpl<EventMapper, Event> imple
     @Override
     public int createEvent(EventAdminDTO eventAdminDTO) {
         // todo upload file
+        // todo check category exists
         Event event = EventAdminDTOMapper.INSTANCE.toEntity(eventAdminDTO);
         return eventMapper.insert(event);
     }
@@ -37,7 +38,6 @@ public class EventAdminServiceImpl extends ServiceImpl<EventMapper, Event> imple
         Event event = EventAdminDTOMapper.INSTANCE.toEntity(eventAdminDTO);
         event.setId(id);
         return eventMapper.updateById(event);
-//        return 1;
     }
 
     @Override

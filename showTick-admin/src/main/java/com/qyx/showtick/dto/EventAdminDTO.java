@@ -14,13 +14,12 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode
 public class EventAdminDTO {
-    @JsonIgnore
-    private Long id;
+//    @JsonIgnore
+//    private Long id;
 
 //    @NotEmpty
     private String name;
 
-    @JsonIgnore
     private String description;
 
 //    @NotEmpty

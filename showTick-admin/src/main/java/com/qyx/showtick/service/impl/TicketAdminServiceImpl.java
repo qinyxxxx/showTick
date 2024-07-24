@@ -1,10 +1,11 @@
-package com.qyx.showtick.service;
+package com.qyx.showtick.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qyx.showtick.common.entity.Ticket;
 import com.qyx.showtick.common.mapper.TicketMapper;
 import com.qyx.showtick.dto.TicketAdminDTO;
 import com.qyx.showtick.mapper.TicketAdminDTOMapper;
+import com.qyx.showtick.service.TicketAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class TicketAdminServiceImpl extends ServiceImpl<TicketMapper, Ticket> im
 
     @Override
     public int createTicket(TicketAdminDTO ticketAdminDTO) {
+        // todo check event exists
         Ticket ticket = TicketAdminDTOMapper.INSTANCE.toEntity(ticketAdminDTO);
         return ticketMapper.insert(ticket);
     }

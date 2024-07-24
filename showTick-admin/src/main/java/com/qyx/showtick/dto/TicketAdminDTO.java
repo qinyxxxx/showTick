@@ -1,5 +1,6 @@
 package com.qyx.showtick.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -9,6 +10,8 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode
 public class TicketAdminDTO {
+//    @JsonIgnore
+//    private Long id;
     private Long eventId;
     private Long seatCategoryId;
     private float price;
