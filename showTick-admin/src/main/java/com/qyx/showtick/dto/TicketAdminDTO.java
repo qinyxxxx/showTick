@@ -10,8 +10,9 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode
 public class TicketAdminDTO {
     private Long eventId;
-    private Long seatCategoryId;
+    private String section;
+    private String seatRow;
+    private String seatNumber;
     private float price;
-    private int totalQuantity;
-    private int remainingQuantity;
+    private int status;
 }

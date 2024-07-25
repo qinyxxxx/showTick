@@ -35,4 +35,7 @@ public class EventAdminDTO {
     private Long categoryId;
 
     private String posterUrl;
+
+    private int totalTicket;
+    private int remainingTicket;
 }

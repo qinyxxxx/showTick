@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
  * Created by Yuxin Qin on 7/19/24
  */
 @Data
-@TableName("eventCategory")
+@TableName("event_category")
 public class EventCategory implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;

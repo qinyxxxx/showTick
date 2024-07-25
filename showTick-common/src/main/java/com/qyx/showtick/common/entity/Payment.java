@@ -15,29 +15,22 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * Created by Yuxin Qin on 7/9/24
+ * Created by Yuxin Qin on 7/25/24
  */
 @Data
-@TableName("event")
-public class Event implements Serializable {
+@TableName("payment")
+public class Payment implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    private String name;
-    private String description;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private String location;
-    private String performer;
-    private int status;
-    private String posterUrl;
-    private Long categoryId;
+    private Long orderId;
+    private String paymentMethod;
+    private float amount;
+    private PaymentStatus status;
 
-    private int totalTicket;
-    private int remainingTicket;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -47,4 +40,5 @@ public class Event implements Serializable {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime updateTime;
+
 }

@@ -27,13 +27,15 @@ public class Ticket implements Serializable {
     private Long id;
 
     private Long eventId;
-    private Long seatCategoryId;
+    private String section;
+
+    private String seatRow;
+
+    private String seatNumber;
 
     private float price;
 
-    private int totalQuantity;
-
-    private int remainingQuantity;
+    private TicketStatus status; // 0: available, 1: sold
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
