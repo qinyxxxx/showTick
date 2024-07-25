@@ -1,5 +1,6 @@
 package com.qyx.showtick.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qyx.showtick.common.entity.Ticket;
 import com.qyx.showtick.common.mapper.TicketMapper;
@@ -18,6 +19,7 @@ import java.util.List;
 public class TicketAdminServiceImpl extends ServiceImpl<TicketMapper, Ticket> implements TicketAdminService {
     @Autowired
     private TicketMapper ticketMapper;
+
 
     @Override
     public int createTicket(TicketAdminDTO ticketAdminDTO) {
@@ -41,5 +43,10 @@ public class TicketAdminServiceImpl extends ServiceImpl<TicketMapper, Ticket> im
     @Override
     public List<Ticket> getAllTickets() {
         return this.list();
+    }
+
+    @Override
+    public List<Ticket> getTicketsByField(String field, Object value) {
+        return ticketMapper.selectList(new QueryWrapper<Ticket>().eq(field, value));
     }
 }

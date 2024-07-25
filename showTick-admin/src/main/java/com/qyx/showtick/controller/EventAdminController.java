@@ -59,4 +59,11 @@ public class EventAdminController {
         return CommonResult.failed();
     }
 
+    @RequestMapping(value = "/category/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    public CommonResult<List<Event>> getEventByCategoryId(@PathVariable Long id) {
+        List<Event> events = eventAdminService.getEventsByField("category_id", id);
+        return CommonResult.success(events);
+    }
+
 }

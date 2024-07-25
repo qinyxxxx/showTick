@@ -1,5 +1,6 @@
 package com.qyx.showtick.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qyx.showtick.common.entity.Event;
 import com.qyx.showtick.common.mapper.EventMapper;
@@ -43,6 +44,13 @@ public class EventAdminServiceImpl extends ServiceImpl<EventMapper, Event> imple
     @Override
     public List<Event> getAllEvents() {
         return this.list();
+    }
+
+    @Override
+    public List<Event> getEventsByField(String fieldName, Object value) {
+        QueryWrapper<Event> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(fieldName, value);
+        return eventMapper.selectList(queryWrapper);
     }
 
 }

@@ -20,4 +20,6 @@ public interface TicketAdminService extends IService<Ticket> {
     int updateTicket(Long id, TicketAdminDTO ticketAdminDTO);
 
     List<Ticket> getAllTickets();
+
+    List<Ticket> getTicketsByField(String field, Object value);
 }

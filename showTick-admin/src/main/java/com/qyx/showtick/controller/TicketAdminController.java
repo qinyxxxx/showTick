@@ -59,4 +59,11 @@ public class TicketAdminController {
         return CommonResult.failed();
     }
 
+    @RequestMapping(value = "/event/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    public CommonResult<List<Ticket>> getTicketsByEventId(@PathVariable Long id) {
+        List<Ticket> tickets = ticketAdminService.getTicketsByField("event_id", id);
+        return CommonResult.success(tickets);
+    }
+
 }

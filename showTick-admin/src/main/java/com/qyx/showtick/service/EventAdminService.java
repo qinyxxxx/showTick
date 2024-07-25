@@ -20,4 +20,6 @@ public interface EventAdminService extends IService<Event> {
     int updateEvent(Long id, EventAdminDTO eventAdminDTO);
 
     List<Event> getAllEvents();
+
+    List<Event> getEventsByField(String fieldName, Object value);
 }
