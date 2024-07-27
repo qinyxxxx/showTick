@@ -1,5 +1,6 @@
 package com.qyx.showtick.dto;
 
+import com.qyx.showtick.common.entity.TicketStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -14,5 +15,5 @@ public class TicketAdminDTO {
     private String seatRow;
     private String seatNumber;
     private float price;
-    private int status;
+    private TicketStatus status;
 }

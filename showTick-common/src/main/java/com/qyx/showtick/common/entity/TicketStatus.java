@@ -7,13 +7,13 @@ import lombok.Getter;
  */
 @Getter
 public enum TicketStatus {
-    AVAILABLE(0),
-    SOLD(1),
-    RESERVED(2);
+    AVAILABLE("Available"),
+    SOLD("Sold"),
+    LOCKED("Locked");
 
-    private final int code;
+    private final String displayName;
 
-    TicketStatus(int code) {
-        this.code = code;
+    TicketStatus(String displayName) {
+        this.displayName = displayName;
     }
 }

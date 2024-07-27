@@ -3,6 +3,7 @@ package com.qyx.showtick.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qyx.showtick.common.entity.Ticket;
+import com.qyx.showtick.common.entity.TicketStatus;
 import com.qyx.showtick.common.mapper.TicketMapper;
 import com.qyx.showtick.dto.TicketAdminDTO;
 import com.qyx.showtick.mapper.TicketAdminDTOMapper;
@@ -25,6 +26,7 @@ public class TicketAdminServiceImpl extends ServiceImpl<TicketMapper, Ticket> im
     public int createTicket(TicketAdminDTO ticketAdminDTO) {
         // todo check event exists
         Ticket ticket = TicketAdminDTOMapper.INSTANCE.toEntity(ticketAdminDTO);
+        ticket.setStatus(TicketStatus.AVAILABLE);
         return ticketMapper.insert(ticket);
     }
 
