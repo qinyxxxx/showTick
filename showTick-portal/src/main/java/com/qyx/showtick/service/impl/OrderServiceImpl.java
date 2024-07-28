@@ -2,10 +2,7 @@ package com.qyx.showtick.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qyx.showtick.common.entity.*;
-import com.qyx.showtick.common.mapper.EventMapper;
-import com.qyx.showtick.common.mapper.OrderItemMapper;
-import com.qyx.showtick.common.mapper.OrderMapper;
-import com.qyx.showtick.common.mapper.TicketMapper;
+import com.qyx.showtick.common.mapper.*;
 import com.qyx.showtick.dto.CreateOrderRequest;
 import com.qyx.showtick.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,26 +29,39 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>  implement
     private EventMapper eventMapper;
 
     @Override
-    public Order createOrder(CreateOrderRequest request) {
+    public Order createOrder(CreateOrderRequest request, Long userId) {
         float totalAmount = 0.0f;
-
-        // todo 加锁更新
-
         List<Ticket> tickets = ticketMapper.selectBatchIds(request.getTicketIds());
+
+        // lock the tickets
         for (Ticket ticket : tickets) {
-            if(ticket.getStatus() != TicketStatus.AVAILABLE) {
-                throw new RuntimeException("Ticket " + ticket.getId() + " is not available");
+            if (ticket == null || ticket.getStatus() != TicketStatus.AVAILABLE) {
+                throw new IllegalArgumentException("Ticket not available");
             }
+            totalAmount += ticket.getPrice();
             ticket.setStatus(TicketStatus.LOCKED);
             ticketMapper.updateById(ticket);
-            totalAmount += ticket.getPrice();
         }
 
+        // 获取事件信息
+        Event event = eventMapper.selectById(tickets.get(0).getEventId());
+        if (event.getRemainingTicket() < request.getTicketIds().size()) {
+            throw new RuntimeException("Not enough remaining tickets");
+        }
+
+        // 创建订单
         Order order = new Order();
-        order.setUserId(request.getUserId());
+        order.setUserId(userId);
         order.setTotalAmount(totalAmount);
         order.setStatus(OrderStatus.PENDING);
         orderMapper.insert(order);
+
+        // 更新剩余票数和版本号
+        event.setRemainingTicket(event.getRemainingTicket() - request.getTicketIds().size());
+        int affectedRows = eventMapper.updateWithOptimisticLock(event);
+        if (affectedRows == 0) {
+            throw new RuntimeException("Failed to update remaining tickets, please try again");
+        }
 
         for(Ticket ticket : tickets){
             OrderItem orderItem = new OrderItem();

@@ -3,6 +3,8 @@ package com.qyx.showtick.controller;
 import com.qyx.showtick.common.api.CommonResult;
 import com.qyx.showtick.common.entity.Payment;
 import com.qyx.showtick.dto.CreatePaymentRequest;
+import com.qyx.showtick.dto.SimplePayRequest;
+import com.qyx.showtick.dto.SimplePayResponse;
 import com.qyx.showtick.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,9 @@ public class PaymentController {
 
     @Autowired
     PaymentService paymentService;
+
+    @Autowired
+    private PaymentService simplepayService;
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody

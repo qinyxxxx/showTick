@@ -51,50 +51,50 @@ class EventTickAdminApplicationTests {
 //            eventAdminService.createEvent(eventAdminDTO);
 //        }
 
-        List<Event> events = eventAdminService.getEventsByField("name", "event 1");
-        if(events.size() != 1){
-            throw new IllegalArgumentException("error");
-        }
-        Long eventId = events.get(0).getId();
-        // create 40 tickets for event 1;
-        // A-1-1 ~ A-2-5
-        // B-1-1 ~ B-2-5
-        // C
-        for (int i = 0; i < 10; i ++){
-            TicketAdminDTO ticket = new TicketAdminDTO();
-            ticket.setEventId(eventId);
-            ticket.setSection("A");
-            ticket.setSeatRow((1 + i/5) + "");
-            ticket.setSeatNumber((1 + i%5) + "");
-            ticket.setPrice((1+i/5)*100);
-            ticketAdminService.createTicket(ticket);
-        }
-        for (int i = 0; i < 10; i ++){
-            TicketAdminDTO ticket = new TicketAdminDTO();
-            ticket.setEventId(eventId);
-            ticket.setSection("B");
-            ticket.setSeatRow((1 + i/5) + "");
-            ticket.setSeatNumber((1 + i%5) + "");
-            ticket.setPrice((1+i/5)*100);
-            ticketAdminService.createTicket(ticket);
-        }
-        for (int i = 0; i < 10; i ++){
-            TicketAdminDTO ticket = new TicketAdminDTO();
-            ticket.setEventId(eventId);
-            ticket.setSection("C");
-            ticket.setSeatRow((1 + i/5) + "");
-            ticket.setSeatNumber((1 + i%5) + "");
-            ticket.setPrice((1+i/5)*100);
-            ticketAdminService.createTicket(ticket);
-        }
-        for (int i = 0; i < 10; i ++){
-            TicketAdminDTO ticket = new TicketAdminDTO();
-            ticket.setEventId(eventId);
-            ticket.setSection("D");
-            ticket.setSeatRow((1 + i/5) + "");
-            ticket.setSeatNumber((1 + i%5) + "");
-            ticket.setPrice((1+i/5)*100);
-            ticketAdminService.createTicket(ticket);
-        }
+//        List<Event> events = eventAdminService.getEventsByField("name", "event 1");
+//        if(events.size() != 1){
+//            throw new IllegalArgumentException("error");
+//        }
+//        Long eventId = events.get(0).getId();
+//        // create 40 tickets for event 1;
+//        // A-1-1 ~ A-2-5
+//        // B-1-1 ~ B-2-5
+//        // C
+//        for (int i = 0; i < 10; i ++){
+//            TicketAdminDTO ticket = new TicketAdminDTO();
+//            ticket.setEventId(eventId);
+//            ticket.setSection("A");
+//            ticket.setSeatRow((1 + i/5) + "");
+//            ticket.setSeatNumber((1 + i%5) + "");
+//            ticket.setPrice((1+i/5)*100);
+//            ticketAdminService.createTicket(ticket);
+//        }
+//        for (int i = 0; i < 10; i ++){
+//            TicketAdminDTO ticket = new TicketAdminDTO();
+//            ticket.setEventId(eventId);
+//            ticket.setSection("B");
+//            ticket.setSeatRow((1 + i/5) + "");
+//            ticket.setSeatNumber((1 + i%5) + "");
+//            ticket.setPrice((1+i/5)*100);
+//            ticketAdminService.createTicket(ticket);
+//        }
+//        for (int i = 0; i < 10; i ++){
+//            TicketAdminDTO ticket = new TicketAdminDTO();
+//            ticket.setEventId(eventId);
+//            ticket.setSection("C");
+//            ticket.setSeatRow((1 + i/5) + "");
+//            ticket.setSeatNumber((1 + i%5) + "");
+//            ticket.setPrice((1+i/5)*100);
+//            ticketAdminService.createTicket(ticket);
+//        }
+//        for (int i = 0; i < 10; i ++){
+//            TicketAdminDTO ticket = new TicketAdminDTO();
+//            ticket.setEventId(eventId);
+//            ticket.setSection("D");
+//            ticket.setSeatRow((1 + i/5) + "");
+//            ticket.setSeatNumber((1 + i%5) + "");
+//            ticket.setPrice((1+i/5)*100);
+//            ticketAdminService.createTicket(ticket);
+//        }
     }
 }

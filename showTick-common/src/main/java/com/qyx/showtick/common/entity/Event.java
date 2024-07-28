@@ -38,6 +38,7 @@ public class Event implements Serializable {
 
     private int totalTicket;
     private int remainingTicket;
+    private int version;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)

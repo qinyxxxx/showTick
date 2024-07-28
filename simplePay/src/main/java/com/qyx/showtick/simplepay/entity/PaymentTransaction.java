@@ -1,4 +1,4 @@
-package com.qyx.showtick.common.entity;
+package com.qyx.showtick.simplepay.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -15,29 +15,23 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * Created by Yuxin Qin on 7/25/24
+ * Created by Yuxin Qin on 7/28/24
  */
 @Data
-@TableName("`order`")
-public class Order implements Serializable {
+@TableName("payment_transaction")
+public class PaymentTransaction implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    private Long userId;
-
-    private float totalAmount;
-    private OrderStatus status;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime createTime;
+    private Long paymentId;
+    private String transactionId;
+    private String transactionStatus;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime updateTime;
+    private LocalDateTime transactionDate;
 }

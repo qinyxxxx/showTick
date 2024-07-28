@@ -30,7 +30,7 @@ public class EventAdminDTO {
 
     private String performer;
 
-    private int status;
+    private int status; //todo event set enum status
 
     private Long categoryId;
 

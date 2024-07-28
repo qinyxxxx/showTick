@@ -38,3 +38,4 @@ secure:
       - /product/**
       - /brand/**
       - /alipay/**
+      - /events/**

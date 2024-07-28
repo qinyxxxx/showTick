@@ -7,6 +7,7 @@ import com.qyx.showtick.common.entity.PaymentStatus;
 import com.qyx.showtick.common.mapper.OrderMapper;
 import com.qyx.showtick.common.mapper.PaymentMapper;
 import com.qyx.showtick.dto.CreatePaymentRequest;
+import com.qyx.showtick.dto.SimplePayRequest;
 import com.qyx.showtick.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
@@ -30,13 +31,13 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment>  imp
         if(order == null){
             throw new IllegalArgumentException("Order not found");
         }
-
         Payment payment = new Payment();
         payment.setPaymentMethod(request.getPaymentMethod());
         payment.setStatus(PaymentStatus.PENDING);
         payment.setAmount(request.getAmount());
         payment.setOrderId(request.getOrderId());
         paymentMapper.insert(payment);
+
         return payment;
     }
 }

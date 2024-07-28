@@ -45,6 +45,7 @@
         <module>showTick-auth</module>
         <module>showTick-admin</module>
         <module>showTick-portal</module>
+        <module>simplePay</module>
     </modules>
 
     <dependencies>

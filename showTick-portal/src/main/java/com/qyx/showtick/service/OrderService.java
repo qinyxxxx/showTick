@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface OrderService extends IService<Order> {
     @Transactional
-    Order createOrder(CreateOrderRequest request);
+    Order createOrder(CreateOrderRequest request, Long userId);
 
 
 }
