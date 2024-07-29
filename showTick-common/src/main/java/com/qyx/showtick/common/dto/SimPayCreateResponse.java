@@ -8,7 +8,8 @@ import lombok.Data;
  * Created by Yuxin Qin on 7/28/24
  */
 @Data
-public class SimPayResponse {
+public class SimPayCreateResponse {
+    private Long paymentId;
     private Long orderId;
     private float amount;
     private PaymentMethod paymentMethod;

@@ -40,3 +40,5 @@ secure:
       - /alipay/**
       - /events/**
       - /payments/**
+      - /simple-pay/**
+      - /payments/pay

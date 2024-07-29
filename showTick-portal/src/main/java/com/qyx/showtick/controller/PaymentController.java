@@ -1,11 +1,12 @@
 package com.qyx.showtick.controller;
 
 import com.qyx.showtick.common.api.CommonResult;
-import com.qyx.showtick.common.dto.SimPayResponse;
+import com.qyx.showtick.common.dto.SimPayCreateResponse;
 import com.qyx.showtick.common.entity.Payment;
 import com.qyx.showtick.dto.CreatePaymentRequest;
-import com.qyx.showtick.common.dto.SimplePayRequest;
+import com.qyx.showtick.common.dto.SimplePayCreateRequest;
 import com.qyx.showtick.service.PaymentService;
+import com.qyx.showtick.simplepay.dto.ShowTickNotificationRequest;
 import com.qyx.showtick.simplepay.service.SimPaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,26 +26,27 @@ public class PaymentController {
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult<SimPayResponse> createPayment(@RequestBody CreatePaymentRequest request) {
-        // 落库一条记录
+    public CommonResult<SimPayCreateResponse> createPayment(@RequestBody CreatePaymentRequest request) {
+        // save payment
         Payment payment = paymentService.createPayment(request);
 
         // 调用 SimplePay API
-        SimplePayRequest simplePayRequest = new SimplePayRequest();
+        SimplePayCreateRequest simplePayRequest = new SimplePayCreateRequest();
         simplePayRequest.setAmount(payment.getAmount());
         simplePayRequest.setOrderId(payment.getOrderId());
         simplePayRequest.setPaymentMethod(payment.getPaymentMethod());
-        SimPayResponse simplePayResponse = simplePayService.createPayment(simplePayRequest);
+        SimPayCreateResponse simplePayResponse = simplePayService.createPayment(simplePayRequest);
 
         // 返回simple pay给的支付链接给前端
         return CommonResult.success(simplePayResponse);
     }
 
-//    @RequestMapping(method = RequestMethod.POST)
-//    @ResponseBody
-//    public CommonResult handlePaymentCallback(@RequestBody SimplePayCallbackRequest request) {
-//        // 处理 SimplePay 的回调通知
-//        paymentService.updatePaymentStatus(request.getPaymentId(), request.getStatus());
-//        return ResponseEntity.ok("Callback received");
-//    }
+    @RequestMapping(value = "/notify", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult notify(@RequestBody ShowTickNotificationRequest request) {
+        // 处理 SimplePay 的回调通知
+        System.err.println("here i am");
+        paymentService.handlePaymentCallBack(request);
+        return CommonResult.success("Callback received");
+    }
 }

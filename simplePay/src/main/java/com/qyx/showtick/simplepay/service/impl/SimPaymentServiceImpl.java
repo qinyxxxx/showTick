@@ -1,16 +1,22 @@
 package com.qyx.showtick.simplepay.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.qyx.showtick.common.dto.SimPayResponse;
-import com.qyx.showtick.common.dto.SimplePayRequest;
+import com.qyx.showtick.common.dto.SimPayCreateResponse;
+import com.qyx.showtick.common.dto.SimplePayCreateRequest;
 import com.qyx.showtick.common.entity.PaymentStatus;
 import com.qyx.showtick.common.entity.SimPayment;
 import com.qyx.showtick.common.entity.SimPaymentTransaction;
 import com.qyx.showtick.common.mapper.SimPaymentMapper;
-import com.qyx.showtick.common.mapper.PaymentTransactionMapper;
+import com.qyx.showtick.common.mapper.SimPaymentTransactionMapper;
+import com.qyx.showtick.simplepay.dto.ShowTickNotificationRequest;
 import com.qyx.showtick.simplepay.service.SimPaymentService;
+import com.qyx.showtick.simplepay.service.SimPaymentTransService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.UUID;
 
 /**
  * Created by Yuxin Qin on 7/28/24
@@ -21,10 +27,16 @@ public class SimPaymentServiceImpl extends ServiceImpl<SimPaymentMapper, SimPaym
     private SimPaymentMapper simPaymentMapper;
 
     @Autowired
-    private PaymentTransactionMapper paymentTransactionMapper;
+    private SimPaymentTransactionMapper paymentTransactionMapper;
+
+    @Autowired
+    private SimPaymentTransService transService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Override
-    public SimPayResponse createPayment(SimplePayRequest request) {
+    public SimPayCreateResponse createPayment(SimplePayCreateRequest request) {
         System.err.println(request.toString());
         SimPayment payment = new SimPayment();
         payment.setOrderId(request.getOrderId());
@@ -32,7 +44,8 @@ public class SimPaymentServiceImpl extends ServiceImpl<SimPaymentMapper, SimPaym
         payment.setPaymentMethod(request.getPaymentMethod());
         payment.setStatus(PaymentStatus.PENDING);
         simPaymentMapper.insert(payment);
-        SimPayResponse response = new SimPayResponse();
+        SimPayCreateResponse response = new SimPayCreateResponse();
+        response.setPaymentId(payment.getId());
         response.setStatus(payment.getStatus());
         response.setPaymentMethod(payment.getPaymentMethod());
         response.setPayLink("www.baidu.com");
@@ -56,7 +69,7 @@ public class SimPaymentServiceImpl extends ServiceImpl<SimPaymentMapper, SimPaym
     }
 
     @Override
-    public SimPayResponse getPaymentById(Long paymentId) {
+    public SimPayCreateResponse getPaymentById(Long paymentId) {
 //        Payment payment = paymentMapper.selectById(paymentId);
 //        if (payment != null) {
 //            PaymentResponse response = new PaymentResponse(payment);
@@ -68,5 +81,30 @@ public class SimPaymentServiceImpl extends ServiceImpl<SimPaymentMapper, SimPaym
 //            return response;
 //        }
         return null;
+    }
+
+
+
+    @Override
+    public SimPaymentTransaction processPayment(Long paymentId, PaymentStatus status) {
+        SimPaymentTransaction transaction = transService.createTransaction(paymentId, status);
+        SimPayment payment = simPaymentMapper.selectById(paymentId);
+        // notify show-tick
+        notifyShowTickSystem(payment, transaction);
+        // return
+        return transaction;
+    }
+
+
+
+    private void notifyShowTickSystem(SimPayment payment, SimPaymentTransaction transaction) {
+        ShowTickNotificationRequest notificationRequest = new ShowTickNotificationRequest();
+        notificationRequest.setPaymentId(payment.getId());
+        notificationRequest.setTransactionId(transaction.getTransactionId());
+        notificationRequest.setStatus(transaction.getTransactionStatus());
+
+        String showTickUrl = "http://localhost:8080/payments/notify"; //todo
+        System.err.println(notificationRequest);
+        restTemplate.postForObject(showTickUrl, notificationRequest, Void.class);
     }
 }

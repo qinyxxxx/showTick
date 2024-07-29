@@ -6,5 +6,5 @@ import com.qyx.showtick.common.entity.SimPaymentTransaction;
 /**
  * Created by Yuxin Qin on 7/28/24
  */
-public interface PaymentTransactionMapper extends BaseMapper<SimPaymentTransaction> {
+public interface SimPaymentTransactionMapper extends BaseMapper<SimPaymentTransaction> {
 }

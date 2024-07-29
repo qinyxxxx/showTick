@@ -27,8 +27,8 @@ public class SimPaymentTransaction implements Serializable {
     private Long id;
 
     private Long paymentId;
-    private String transactionId;
-    private String transactionStatus;
+    private String transactionId; //UUID
+    private PaymentStatus transactionStatus;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonSerialize(using = LocalDateTimeSerializer.class)

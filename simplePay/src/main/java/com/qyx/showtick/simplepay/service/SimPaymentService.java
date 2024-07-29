@@ -1,8 +1,8 @@
 package com.qyx.showtick.simplepay.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.qyx.showtick.common.dto.SimPayResponse;
-import com.qyx.showtick.common.dto.SimplePayRequest;
+import com.qyx.showtick.common.dto.SimPayCreateResponse;
+import com.qyx.showtick.common.dto.SimplePayCreateRequest;
 import com.qyx.showtick.common.entity.PaymentStatus;
 import com.qyx.showtick.common.entity.SimPayment;
 import com.qyx.showtick.common.entity.SimPaymentTransaction;
@@ -13,10 +13,17 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public interface SimPaymentService extends IService<SimPayment> {
     @Transactional
-    SimPayResponse createPayment(SimplePayRequest request);
+    SimPayCreateResponse createPayment(SimplePayCreateRequest request);
     @Transactional
     void updatePaymentStatus(Long paymentId, PaymentStatus status);
     @Transactional
     void recordTransaction(SimPaymentTransaction transaction);
-    SimPayResponse getPaymentById(Long paymentId);
+    SimPayCreateResponse getPaymentById(Long paymentId);
+
+
+
+
+    SimPaymentTransaction processPayment(Long paymentId, PaymentStatus status);
+
+
 }
