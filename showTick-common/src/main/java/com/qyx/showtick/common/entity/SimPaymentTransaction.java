@@ -1,4 +1,4 @@
-package com.qyx.showtick.simplepay.entity;
+package com.qyx.showtick.common.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -18,8 +18,8 @@ import java.time.LocalDateTime;
  * Created by Yuxin Qin on 7/28/24
  */
 @Data
-@TableName("payment_transaction")
-public class PaymentTransaction implements Serializable {
+@TableName("sim_payment_transaction")
+public class SimPaymentTransaction implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 

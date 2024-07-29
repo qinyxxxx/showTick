@@ -40,23 +40,10 @@
 <!--			<artifactId>spring-boot-starter-test</artifactId>-->
 <!--			<scope>test</scope>-->
 <!--		</dependency>-->
-
-		<!-- mysql -->
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-		</dependency>
-
-		<!-- mybatis plus springboot starter -->
-		<dependency>
-			<groupId>com.baomidou</groupId>
-			<artifactId>mybatis-plus-spring-boot3-starter</artifactId>
-		</dependency>
-
-		<!-- mybatis plus starter-->
-		<dependency>
-			<groupId>com.baomidou</groupId>
-			<artifactId>mybatis-plus-boot-starter</artifactId>
+			<groupId>com.qyx</groupId>
+			<artifactId>showTick-common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

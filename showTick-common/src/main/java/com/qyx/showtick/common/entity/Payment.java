@@ -27,7 +27,7 @@ public class Payment implements Serializable {
     private Long id;
 
     private Long orderId;
-    private String paymentMethod;
+    private PaymentMethod paymentMethod;
     private float amount;
     private PaymentStatus status;
 

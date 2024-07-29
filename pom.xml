@@ -42,10 +42,10 @@
 
     <modules>
         <module>showTick-common</module>
+        <module>simplePay</module>
         <module>showTick-auth</module>
         <module>showTick-admin</module>
         <module>showTick-portal</module>
-        <module>simplePay</module>
     </modules>
 
     <dependencies>

@@ -7,10 +7,8 @@ import com.qyx.showtick.common.entity.PaymentStatus;
 import com.qyx.showtick.common.mapper.OrderMapper;
 import com.qyx.showtick.common.mapper.PaymentMapper;
 import com.qyx.showtick.dto.CreatePaymentRequest;
-import com.qyx.showtick.dto.SimplePayRequest;
 import com.qyx.showtick.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 /**
@@ -34,7 +32,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment>  imp
         Payment payment = new Payment();
         payment.setPaymentMethod(request.getPaymentMethod());
         payment.setStatus(PaymentStatus.PENDING);
-        payment.setAmount(request.getAmount());
+        payment.setAmount(order.getTotalAmount());
         payment.setOrderId(request.getOrderId());
         paymentMapper.insert(payment);
 
