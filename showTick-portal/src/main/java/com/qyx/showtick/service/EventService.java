@@ -16,4 +16,6 @@ public interface EventService extends IService<Event> {
 
     List<EventDTO> getAllEvents();
 
+    List<Event> getTop5Events();
+
 }

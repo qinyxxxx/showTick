@@ -4,8 +4,8 @@ import com.qyx.showtick.common.api.CommonResult;
 import com.qyx.showtick.common.dto.SimplePayCreateRequest;
 
 import com.qyx.showtick.common.dto.SimPayCreateResponse;
-import com.qyx.showtick.common.entity.PaymentStatus;
-import com.qyx.showtick.common.entity.SimPaymentTransaction;
+import com.qyx.showtick.common.entity.*;
+import com.qyx.showtick.simplepay.dto.PayResponse;
 import com.qyx.showtick.simplepay.service.SimPaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -32,11 +32,21 @@ public class SimPayController {
         return CommonResult.success(response);
     }
 
-    @RequestMapping(value = "/pay", method = RequestMethod.POST)
-    public CommonResult<SimPaymentTransaction> pay(@RequestParam Long paymentId, @RequestParam PaymentStatus paymentStatus) {
-        SimPaymentTransaction transaction = paymentService.processPayment(paymentId, paymentStatus);
+    @RequestMapping(value = "/{paymentId}/pay", method = RequestMethod.POST)
+    public CommonResult<PayResponse> pay(@PathVariable Long paymentId,
+                                         @RequestParam PaymentMethod paymentMethod,
+                                         @RequestParam PaymentStatus paymentStatus) {
+        SimPaymentTransaction transaction = paymentService.processPayment(paymentId, paymentMethod, paymentStatus);
+        SimPayment payment = paymentService.getPaymentById(transaction.getPaymentId());
+        PayResponse response = new PayResponse();
+        response.setSimPayment(payment);
+        response.setTransaction(transaction);
+        return CommonResult.success(response);
+    }
 
-
-        return CommonResult.success(transaction);
+    @RequestMapping(value = "/{paymentId}", method = RequestMethod.GET)
+    public CommonResult<SimPayment> getPayment(@PathVariable Long paymentId) {
+        SimPayment payment = paymentService.getPaymentById(paymentId);
+        return CommonResult.success(payment);
     }
 }

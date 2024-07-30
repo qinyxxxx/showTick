@@ -29,9 +29,15 @@ public class EventController {
         return CommonResult.success(eventService.getEventById(id));
     }
 
+    @RequestMapping(value = "/top5", method = RequestMethod.GET)
+    @ResponseBody
+    public CommonResult<List<Event>> getTop5Events() {
+        return CommonResult.success(eventService.getTop5Events());
+    }
+
     @RequestMapping(value = "/{eventId}/available-seats", method = RequestMethod.GET)
-    public List<Ticket> getAvailableSeatsByEventId(@PathVariable Long eventId) {
-        return ticketService.getAvailableSeatsByEventId(eventId);
+    public CommonResult<List<Ticket>> getAvailableSeatsByEventId(@PathVariable Long eventId) {
+        return CommonResult.success(ticketService.getAvailableSeatsByEventId(eventId));
     }
 
 }

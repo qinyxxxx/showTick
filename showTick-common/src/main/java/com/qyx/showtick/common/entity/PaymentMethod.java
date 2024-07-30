@@ -9,7 +9,8 @@ import lombok.Getter;
 public enum PaymentMethod {
     CREDIT_CARD("Credit Card"),
     PAYPAL("Paypal"),
-    ALIPAY("Alipay");
+    ALIPAY("Alipay"),
+    UNKNOWN("Not Set");
 
     private final String displayName;
 

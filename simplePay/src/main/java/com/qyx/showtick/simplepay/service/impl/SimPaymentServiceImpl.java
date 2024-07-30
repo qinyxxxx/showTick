@@ -1,8 +1,10 @@
 package com.qyx.showtick.simplepay.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qyx.showtick.common.dto.SimPayCreateResponse;
 import com.qyx.showtick.common.dto.SimplePayCreateRequest;
+import com.qyx.showtick.common.entity.PaymentMethod;
 import com.qyx.showtick.common.entity.PaymentStatus;
 import com.qyx.showtick.common.entity.SimPayment;
 import com.qyx.showtick.common.entity.SimPaymentTransaction;
@@ -16,6 +18,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -37,22 +40,31 @@ public class SimPaymentServiceImpl extends ServiceImpl<SimPaymentMapper, SimPaym
 
     @Override
     public SimPayCreateResponse createPayment(SimplePayCreateRequest request) {
-        System.err.println(request.toString());
+        List<SimPayment> payments = simPaymentMapper.selectList(new QueryWrapper<SimPayment>().eq("order_id", request.getOrderId()));
+        if(!payments.isEmpty()){
+            SimPayment payment = payments.get(0);
+            return getSimPayCreateResponse(payment);
+        }
         SimPayment payment = new SimPayment();
         payment.setOrderId(request.getOrderId());
         payment.setAmount(request.getAmount());
         payment.setPaymentMethod(request.getPaymentMethod());
         payment.setStatus(PaymentStatus.PENDING);
         simPaymentMapper.insert(payment);
+        return getSimPayCreateResponse(payment);
+    }
+
+    private SimPayCreateResponse getSimPayCreateResponse(SimPayment payment) {
         SimPayCreateResponse response = new SimPayCreateResponse();
         response.setPaymentId(payment.getId());
         response.setStatus(payment.getStatus());
         response.setPaymentMethod(payment.getPaymentMethod());
-        response.setPayLink("www.baidu.com");
+        response.setPayLink("http://localhost:3000/simpay/payment/" + payment.getId());
         response.setAmount(payment.getAmount());
         response.setOrderId(payment.getOrderId());
         return response;
     }
+
 
     @Override
     public void updatePaymentStatus(Long paymentId, PaymentStatus status) {
@@ -69,25 +81,15 @@ public class SimPaymentServiceImpl extends ServiceImpl<SimPaymentMapper, SimPaym
     }
 
     @Override
-    public SimPayCreateResponse getPaymentById(Long paymentId) {
-//        Payment payment = paymentMapper.selectById(paymentId);
-//        if (payment != null) {
-//            PaymentResponse response = new PaymentResponse(payment);
-//            response.setId(payment.getId());
-//            response.setOrderId(payment.getOrderId());
-//            response.setAmount(payment.getAmount());
-//            response.setPaymentMethod(payment.getPaymentMethod());
-//            response.setStatus(payment.getPaymentStatus());
-//            return response;
-//        }
-        return null;
+    public SimPayment getPaymentById(Long paymentId) {
+        return simPaymentMapper.selectById(paymentId);
     }
 
 
 
     @Override
-    public SimPaymentTransaction processPayment(Long paymentId, PaymentStatus status) {
-        SimPaymentTransaction transaction = transService.createTransaction(paymentId, status);
+    public SimPaymentTransaction processPayment(Long paymentId, PaymentMethod paymentMethod, PaymentStatus status) {
+        SimPaymentTransaction transaction = transService.createTransaction(paymentId, paymentMethod, status);
         SimPayment payment = simPaymentMapper.selectById(paymentId);
         // notify show-tick
         notifyShowTickSystem(payment, transaction);

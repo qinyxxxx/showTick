@@ -21,25 +21,24 @@ public class PaymentController {
     @Autowired
     PaymentService paymentService;
 
-    @Autowired
-    private SimPaymentService simplePayService;
 
-    @RequestMapping(method = RequestMethod.POST)
-    @ResponseBody
-    public CommonResult<SimPayCreateResponse> createPayment(@RequestBody CreatePaymentRequest request) {
-        // save payment
-        Payment payment = paymentService.createPayment(request);
 
-        // 调用 SimplePay API
-        SimplePayCreateRequest simplePayRequest = new SimplePayCreateRequest();
-        simplePayRequest.setAmount(payment.getAmount());
-        simplePayRequest.setOrderId(payment.getOrderId());
-        simplePayRequest.setPaymentMethod(payment.getPaymentMethod());
-        SimPayCreateResponse simplePayResponse = simplePayService.createPayment(simplePayRequest);
-
-        // 返回simple pay给的支付链接给前端
-        return CommonResult.success(simplePayResponse);
-    }
+//    @RequestMapping(method = RequestMethod.POST)
+//    @ResponseBody
+//    public CommonResult<SimPayCreateResponse> createPayment(@RequestBody CreatePaymentRequest request) {
+//        // save payment
+//        Payment payment = paymentService.createPayment(request);
+//
+//        // 调用 SimplePay API
+//        SimplePayCreateRequest simplePayRequest = new SimplePayCreateRequest();
+//        simplePayRequest.setAmount(payment.getAmount());
+//        simplePayRequest.setOrderId(payment.getOrderId());
+//        simplePayRequest.setPaymentMethod(payment.getPaymentMethod());
+//        SimPayCreateResponse simplePayResponse = simplePayService.createPayment(simplePayRequest);
+//
+//        // 返回simple pay给的支付链接给前端
+//        return CommonResult.success(simplePayResponse);
+//    }
 
     @RequestMapping(value = "/notify", method = RequestMethod.POST)
     @ResponseBody

@@ -3,6 +3,7 @@ package com.qyx.showtick.simplepay.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.qyx.showtick.common.dto.SimPayCreateResponse;
 import com.qyx.showtick.common.dto.SimplePayCreateRequest;
+import com.qyx.showtick.common.entity.PaymentMethod;
 import com.qyx.showtick.common.entity.PaymentStatus;
 import com.qyx.showtick.common.entity.SimPayment;
 import com.qyx.showtick.common.entity.SimPaymentTransaction;
@@ -18,12 +19,8 @@ public interface SimPaymentService extends IService<SimPayment> {
     void updatePaymentStatus(Long paymentId, PaymentStatus status);
     @Transactional
     void recordTransaction(SimPaymentTransaction transaction);
-    SimPayCreateResponse getPaymentById(Long paymentId);
+    SimPayment getPaymentById(Long paymentId);
 
-
-
-
-    SimPaymentTransaction processPayment(Long paymentId, PaymentStatus status);
-
+    SimPaymentTransaction processPayment(Long paymentId, PaymentMethod paymentMethod, PaymentStatus status);
 
 }

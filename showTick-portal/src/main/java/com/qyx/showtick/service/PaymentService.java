@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public interface PaymentService extends IService<Payment> {
     @Transactional
-    Payment createPayment(CreatePaymentRequest request);
+    Payment createPayment(Long orderId);
 
     @Transactional
     void handlePaymentCallBack(ShowTickNotificationRequest request);

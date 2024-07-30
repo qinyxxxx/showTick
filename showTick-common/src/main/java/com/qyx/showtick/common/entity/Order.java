@@ -31,6 +31,8 @@ public class Order implements Serializable {
     private float totalAmount;
     private OrderStatus status;
 
+    private Long eventId;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)

@@ -34,16 +34,20 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment>  imp
     private OrderItemMapper orderItemMapper;
 
     @Override
-    public Payment createPayment(CreatePaymentRequest request) {
-        Order order = orderMapper.selectById(request.getOrderId());
+    public Payment createPayment(Long orderId) {
+        List<Payment> payments = paymentMapper.selectList(new QueryWrapper<Payment>().eq("order_id", orderId));
+        if(!payments.isEmpty()){
+            return payments.get(0);
+        }
+        Order order = orderMapper.selectById(orderId);
         if(order == null){
             throw new IllegalArgumentException("Order not found");
         }
         Payment payment = new Payment();
-        payment.setPaymentMethod(request.getPaymentMethod());
+        payment.setPaymentMethod(PaymentMethod.UNKNOWN);
         payment.setStatus(PaymentStatus.PENDING);
         payment.setAmount(order.getTotalAmount());
-        payment.setOrderId(request.getOrderId());
+        payment.setOrderId(orderId);
         paymentMapper.insert(payment);
 
         return payment;
