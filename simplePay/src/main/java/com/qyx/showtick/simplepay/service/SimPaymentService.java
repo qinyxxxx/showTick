@@ -21,6 +21,6 @@ public interface SimPaymentService extends IService<SimPayment> {
     void recordTransaction(SimPaymentTransaction transaction);
     SimPayment getPaymentById(Long paymentId);
 
-    SimPaymentTransaction processPayment(Long paymentId, PaymentMethod paymentMethod, PaymentStatus status);
+    SimPaymentTransaction processPayment(Long simPaymentId, PaymentMethod paymentMethod, PaymentStatus status);
 
 }

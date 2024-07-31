@@ -1,5 +1,6 @@
 package com.qyx.showtick.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.qyx.showtick.common.api.CommonResult;
 import com.qyx.showtick.common.dto.SimPayCreateResponse;
 import com.qyx.showtick.common.dto.SimplePayCreateRequest;
@@ -8,6 +9,7 @@ import com.qyx.showtick.common.entity.Payment;
 import com.qyx.showtick.common.entity.User;
 import com.qyx.showtick.component.JwtUtil;
 import com.qyx.showtick.dto.CreateOrderRequest;
+import com.qyx.showtick.dto.OrderDTO;
 import com.qyx.showtick.dto.OrderDetailResponse;
 import com.qyx.showtick.service.OrderService;
 import com.qyx.showtick.service.PaymentService;
@@ -42,6 +44,15 @@ public class OrderController {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @RequestMapping(method = RequestMethod.GET)
+    public CommonResult<IPage<OrderDTO>> getUserOrdersByPage(@RequestParam int pageNum,
+                                                             @RequestParam int pageSize, HttpServletRequest httpRequest) {
+        String token = httpRequest.getHeader(tokenHeader).substring(7);
+        String username = jwtUtil.getUsernameFromToken(token);
+        IPage<OrderDTO> orderIPage = orderService.getOrdersByUsername(username, pageNum, pageSize);
+        return CommonResult.success(orderIPage);
+    }
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody

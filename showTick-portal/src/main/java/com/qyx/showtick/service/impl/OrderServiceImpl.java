@@ -1,17 +1,18 @@
 package com.qyx.showtick.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qyx.showtick.common.entity.*;
 import com.qyx.showtick.common.mapper.*;
 import com.qyx.showtick.dto.CreateOrderRequest;
+import com.qyx.showtick.dto.OrderDTO;
 import com.qyx.showtick.dto.OrderDetailResponse;
 import com.qyx.showtick.service.OrderService;
+import com.qyx.showtick.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.ls.LSInput;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>  implement
 
     @Autowired
     private EventMapper eventMapper;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public Order createOrder(CreateOrderRequest request, Long userId) {
@@ -140,4 +144,47 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>  implement
         }
         return count;
     }
+
+    @Override
+    public IPage<OrderDTO> getOrdersByUsername(String username, int pageNum, int pageSize) {
+        User user = userService.geUserByUsername(username);
+
+        // 获取分页的Order列表
+        Page<Order> orderPage = new Page<>(pageNum, pageSize);
+        QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", user.getId());
+        IPage<Order> ordersPageResult = orderMapper.selectPage(orderPage, queryWrapper);
+
+        // 创建分页结果，包含OrderDTO列表
+        Page<OrderDTO> orderDTOPage = new Page<>(pageNum, pageSize);
+        List<OrderDTO> orderDTOList = ordersPageResult.getRecords().stream().map(order -> {
+            OrderDTO orderDTO = new OrderDTO();
+            orderDTO.setOrder(order);
+            // 获取Order对应的event
+            orderDTO.setEvent(eventMapper.selectById(order.getEventId()));
+            // 获取Order对应的tickets
+            orderDTO.setTickets(getTicketsByOrderId(order.getId()));
+
+            return orderDTO;
+        }).collect(Collectors.toList());
+
+        orderDTOPage.setRecords(orderDTOList);
+        orderDTOPage.setTotal(ordersPageResult.getTotal());
+        orderDTOPage.setCurrent(ordersPageResult.getCurrent());
+        orderDTOPage.setSize(ordersPageResult.getSize());
+        orderDTOPage.setPages(ordersPageResult.getPages());
+        return orderDTOPage;
+    }
+
+    @Override
+    public int updateOrderStatus(Long orderId, OrderStatus status) {
+        Order order = orderMapper.selectById(orderId);
+        order.setStatus(status);
+        int count = orderMapper.updateById(order);
+        if(count != 1){
+            throw new RuntimeException("update order status failed");
+        }
+        return count;
+    }
+
 }

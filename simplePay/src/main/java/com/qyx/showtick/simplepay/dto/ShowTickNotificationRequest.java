@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
  */
 @Data
 public class ShowTickNotificationRequest {
-    private Long paymentId;
+    private Long simPaymentId;
     private String transactionId;
     private PaymentStatus status;
+    private Long orderId;
 }

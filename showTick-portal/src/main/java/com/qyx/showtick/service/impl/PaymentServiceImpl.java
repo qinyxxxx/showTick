@@ -3,12 +3,10 @@ package com.qyx.showtick.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qyx.showtick.common.entity.*;
-import com.qyx.showtick.common.mapper.OrderItemMapper;
-import com.qyx.showtick.common.mapper.OrderMapper;
 import com.qyx.showtick.common.mapper.PaymentMapper;
-import com.qyx.showtick.common.mapper.TicketMapper;
-import com.qyx.showtick.dto.CreatePaymentRequest;
+import com.qyx.showtick.service.OrderService;
 import com.qyx.showtick.service.PaymentService;
+import com.qyx.showtick.service.TicketService;
 import com.qyx.showtick.simplepay.dto.ShowTickNotificationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,13 +23,10 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment>  imp
     private PaymentMapper paymentMapper;
 
     @Autowired
-    private OrderMapper orderMapper;
+    private OrderService orderService;
 
     @Autowired
-    private TicketMapper ticketMapper;
-
-    @Autowired
-    private OrderItemMapper orderItemMapper;
+    private TicketService ticketService;
 
     @Override
     public Payment createPayment(Long orderId) {
@@ -39,7 +34,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment>  imp
         if(!payments.isEmpty()){
             return payments.get(0);
         }
-        Order order = orderMapper.selectById(orderId);
+        Order order = orderService.getById(orderId);
         if(order == null){
             throw new IllegalArgumentException("Order not found");
         }
@@ -55,36 +50,33 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment>  imp
 
     @Override
     public void handlePaymentCallBack(ShowTickNotificationRequest request) {
+        Order order = orderService.getById(request.getOrderId());
 
         // update payment
-        Payment payment = paymentMapper.selectById(request.getPaymentId());
+        Payment payment = paymentMapper.selectOne(new QueryWrapper<Payment>().eq("order_id", request.getOrderId()));
+        if(payment == null){
+            throw new RuntimeException("error, payment should not be null");
+        }
         payment.setStatus(request.getStatus());
         paymentMapper.updateById(payment);
 
         System.err.println(payment);
 
         // update order
-        Order order = orderMapper.selectById(payment.getOrderId());
         if (request.getStatus() != PaymentStatus.COMPLETED){
             System.err.println("not completed");
             return;
         }
 
-        System.err.println(order);
-
-        order.setStatus(OrderStatus.COMPLETED);
+        orderService.updateOrderStatus(order.getId(), OrderStatus.COMPLETED);
 
         // update tickets
-        List<OrderItem> orderItemList = orderItemMapper.selectList(new QueryWrapper<OrderItem>().eq("order_id", order.getId()));
-        for(OrderItem orderItem : orderItemList){
-            Ticket ticket = ticketMapper.selectById(orderItem.getTicketId());
+        List<Ticket> tickets = orderService.getTicketsByOrderId(request.getOrderId());
+        for(Ticket ticket : tickets){
             if(ticket.getStatus() != TicketStatus.LOCKED){
                 throw new RuntimeException("ticket status error: " + ticket.getId() + " " + ticket.getStatus());
             }
-            ticket.setStatus(TicketStatus.SOLD);
-            System.err.println(ticket);
-            break;
+            ticketService.updateTicketStatus(ticket.getId(), TicketStatus.SOLD);
         }
-
     }
 }

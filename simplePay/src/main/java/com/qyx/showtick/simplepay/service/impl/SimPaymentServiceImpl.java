@@ -14,12 +14,10 @@ import com.qyx.showtick.simplepay.dto.ShowTickNotificationRequest;
 import com.qyx.showtick.simplepay.service.SimPaymentService;
 import com.qyx.showtick.simplepay.service.SimPaymentTransService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by Yuxin Qin on 7/28/24
@@ -54,14 +52,14 @@ public class SimPaymentServiceImpl extends ServiceImpl<SimPaymentMapper, SimPaym
         return getSimPayCreateResponse(payment);
     }
 
-    private SimPayCreateResponse getSimPayCreateResponse(SimPayment payment) {
+    private SimPayCreateResponse getSimPayCreateResponse(SimPayment simPayment) {
         SimPayCreateResponse response = new SimPayCreateResponse();
-        response.setPaymentId(payment.getId());
-        response.setStatus(payment.getStatus());
-        response.setPaymentMethod(payment.getPaymentMethod());
-        response.setPayLink("http://localhost:3000/simpay/payment/" + payment.getId());
-        response.setAmount(payment.getAmount());
-        response.setOrderId(payment.getOrderId());
+        response.setSimPaymentId(simPayment.getId());
+        response.setStatus(simPayment.getStatus());
+        response.setPaymentMethod(simPayment.getPaymentMethod());
+        response.setPayLink("http://localhost:3000/simpay/payment/" + simPayment.getId());
+        response.setAmount(simPayment.getAmount());
+        response.setOrderId(simPayment.getOrderId());
         return response;
     }
 
@@ -88,9 +86,9 @@ public class SimPaymentServiceImpl extends ServiceImpl<SimPaymentMapper, SimPaym
 
 
     @Override
-    public SimPaymentTransaction processPayment(Long paymentId, PaymentMethod paymentMethod, PaymentStatus status) {
-        SimPaymentTransaction transaction = transService.createTransaction(paymentId, paymentMethod, status);
-        SimPayment payment = simPaymentMapper.selectById(paymentId);
+    public SimPaymentTransaction processPayment(Long simPaymentId, PaymentMethod paymentMethod, PaymentStatus status) {
+        SimPaymentTransaction transaction = transService.createTransaction(simPaymentId, paymentMethod, status);
+        SimPayment payment = simPaymentMapper.selectById(simPaymentId);
         // notify show-tick
         notifyShowTickSystem(payment, transaction);
         // return
@@ -99,11 +97,12 @@ public class SimPaymentServiceImpl extends ServiceImpl<SimPaymentMapper, SimPaym
 
 
 
-    private void notifyShowTickSystem(SimPayment payment, SimPaymentTransaction transaction) {
+    private void notifyShowTickSystem(SimPayment simPayment, SimPaymentTransaction transaction) {
         ShowTickNotificationRequest notificationRequest = new ShowTickNotificationRequest();
-        notificationRequest.setPaymentId(payment.getId());
+        notificationRequest.setSimPaymentId(simPayment.getId());
         notificationRequest.setTransactionId(transaction.getTransactionId());
         notificationRequest.setStatus(transaction.getTransactionStatus());
+        notificationRequest.setOrderId(simPayment.getOrderId());
 
         String showTickUrl = "http://localhost:8080/payments/notify"; //todo
         System.err.println(notificationRequest);

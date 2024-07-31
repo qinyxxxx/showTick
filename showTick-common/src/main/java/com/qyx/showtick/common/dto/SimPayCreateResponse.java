@@ -9,7 +9,7 @@ import lombok.Data;
  */
 @Data
 public class SimPayCreateResponse {
-    private Long paymentId;
+    private Long simPaymentId;
     private Long orderId;
     private float amount;
     private PaymentMethod paymentMethod;

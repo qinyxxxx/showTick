@@ -29,9 +29,9 @@ public class SimPaymentTransServiceImpl extends ServiceImpl<SimPaymentTransactio
     private SimPaymentTransactionMapper paymentTransactionMapper;
 
     @Override
-    public SimPaymentTransaction createTransaction(Long paymentId, PaymentMethod paymentMethod, PaymentStatus status) {
+    public SimPaymentTransaction createTransaction(Long simPaymentId, PaymentMethod paymentMethod, PaymentStatus status) {
         SimPaymentTransaction transaction;
-        List<SimPaymentTransaction> transactions = paymentTransactionMapper.selectList(new QueryWrapper<SimPaymentTransaction>().eq("payment_id", paymentId));
+        List<SimPaymentTransaction> transactions = paymentTransactionMapper.selectList(new QueryWrapper<SimPaymentTransaction>().eq("payment_id", simPaymentId));
         if(!transactions.isEmpty()){
             transaction = transactions.get(0);
         } else {
@@ -39,11 +39,11 @@ public class SimPaymentTransServiceImpl extends ServiceImpl<SimPaymentTransactio
             transaction = new SimPaymentTransaction();
             transaction.setTransactionId(UUID.randomUUID().toString());
             transaction.setTransactionStatus(status);
-            transaction.setPaymentId(paymentId);
+            transaction.setPaymentId(simPaymentId);
             paymentTransactionMapper.insert(transaction);
         }
         // update payment status
-        SimPayment payment = simPaymentMapper.selectById(paymentId);
+        SimPayment payment = simPaymentMapper.selectById(simPaymentId);
         payment.setStatus(status);
         payment.setPaymentMethod(paymentMethod);
         simPaymentMapper.updateById(payment);
