@@ -1,4 +1,4 @@
-package com.qyx.showtick.common.config;
+package com.qyx.showtick.simplepay.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

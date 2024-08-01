@@ -37,7 +37,7 @@ public class SimPaymentServiceImpl extends ServiceImpl<SimPaymentMapper, SimPaym
     private RestTemplate restTemplate;
 
     @Override
-    public SimPayCreateResponse createPayment(SimplePayCreateRequest request) {
+    public SimPayCreateResponse createPayment(SimplePayCreateRequest request, Long userId) {
         List<SimPayment> payments = simPaymentMapper.selectList(new QueryWrapper<SimPayment>().eq("order_id", request.getOrderId()));
         if(!payments.isEmpty()){
             SimPayment payment = payments.get(0);
@@ -45,6 +45,7 @@ public class SimPaymentServiceImpl extends ServiceImpl<SimPaymentMapper, SimPaym
         }
         SimPayment payment = new SimPayment();
         payment.setOrderId(request.getOrderId());
+        payment.setUserId(userId);
         payment.setAmount(request.getAmount());
         payment.setPaymentMethod(request.getPaymentMethod());
         payment.setStatus(PaymentStatus.PENDING);
@@ -84,7 +85,6 @@ public class SimPaymentServiceImpl extends ServiceImpl<SimPaymentMapper, SimPaym
     }
 
 
-
     @Override
     public SimPaymentTransaction processPayment(Long simPaymentId, PaymentMethod paymentMethod, PaymentStatus status) {
         SimPaymentTransaction transaction = transService.createTransaction(simPaymentId, paymentMethod, status);
@@ -96,7 +96,6 @@ public class SimPaymentServiceImpl extends ServiceImpl<SimPaymentMapper, SimPaym
     }
 
 
-
     private void notifyShowTickSystem(SimPayment simPayment, SimPaymentTransaction transaction) {
         ShowTickNotificationRequest notificationRequest = new ShowTickNotificationRequest();
         notificationRequest.setSimPaymentId(simPayment.getId());
@@ -105,7 +104,6 @@ public class SimPaymentServiceImpl extends ServiceImpl<SimPaymentMapper, SimPaym
         notificationRequest.setOrderId(simPayment.getOrderId());
 
         String showTickUrl = "http://localhost:8080/payments/notify"; //todo
-        System.err.println(notificationRequest);
         restTemplate.postForObject(showTickUrl, notificationRequest, Void.class);
     }
 }

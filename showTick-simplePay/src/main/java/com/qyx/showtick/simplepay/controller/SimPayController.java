@@ -1,9 +1,7 @@
 package com.qyx.showtick.simplepay.controller;
 
 import com.qyx.showtick.common.api.CommonResult;
-import com.qyx.showtick.common.dto.SimplePayCreateRequest;
 
-import com.qyx.showtick.common.dto.SimPayCreateResponse;
 import com.qyx.showtick.common.entity.*;
 import com.qyx.showtick.simplepay.dto.SimGetPayResponse;
 import com.qyx.showtick.simplepay.service.SimPaymentService;
@@ -19,18 +17,6 @@ public class SimPayController {
 
     @Autowired
     private SimPaymentService paymentService;
-
-
-    @PostMapping
-    public CommonResult<SimPayCreateResponse> createPayment(@RequestBody SimplePayCreateRequest request) {
-        SimPayCreateResponse response = paymentService.createPayment(request);
-//        SimPayResponse response = new SimPayResponse();
-//        response.setPaymentMethod(payment.getPaymentMethod());
-//        response.setStatus(payment.getPaymentStatus());
-//        response.setAmount(payment.getAmount());
-//        response.setOrderId(payment.getOrderId());
-        return CommonResult.success(response);
-    }
 
     @RequestMapping(value = "/{simPaymentId}/pay", method = RequestMethod.POST)
     public CommonResult<SimGetPayResponse> pay(@PathVariable Long simPaymentId,

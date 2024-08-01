@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qyx.showtick.common.entity.*;
+import com.qyx.showtick.common.exception.Asserts;
 import com.qyx.showtick.common.mapper.*;
 import com.qyx.showtick.dto.CreateOrderRequest;
 import com.qyx.showtick.dto.OrderDTO;
@@ -78,6 +79,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>  implement
             orderItem.setOrderId(order.getId());
             orderItem.setAmount(ticket.getPrice());
             orderItem.setTicketId(ticket.getId());
+            orderItem.setUserId(orderItem.getUserId());
             orderItemMapper.insert(orderItem);
         }
 
@@ -131,7 +133,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>  implement
         }
         // update event remaining tickets(with lock)
         Event event = eventMapper.selectById(order.getEventId());
-        event.setRemainingTicket(event.getRemainingTicket() + tickets.size());
+        event.setRemainingTicket(event.getRemainingTicket() - tickets.size());
         int affectedRows = eventMapper.updateWithOptimisticLock(event);
         if (affectedRows == 0) {
             throw new RuntimeException("Failed to update remaining tickets, please try again");
@@ -146,13 +148,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>  implement
     }
 
     @Override
-    public IPage<OrderDTO> getOrdersByUsername(String username, int pageNum, int pageSize) {
-        User user = userService.geUserByUsername(username);
+    public IPage<OrderDTO> getOrdersByUsername(Long userId, int pageNum, int pageSize) {
 
         // 获取分页的Order列表
         Page<Order> orderPage = new Page<>(pageNum, pageSize);
         QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id", user.getId());
+        queryWrapper.eq("user_id", userId);
         IPage<Order> ordersPageResult = orderMapper.selectPage(orderPage, queryWrapper);
 
         // 创建分页结果，包含OrderDTO列表
@@ -185,6 +186,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>  implement
             throw new RuntimeException("update order status failed");
         }
         return count;
+    }
+
+    @Override
+    public Long getUserIdByOrderId(Long orderId) {
+        Order order = orderMapper.selectById(orderId);
+        if(order == null){
+            Asserts.fail("order not found");
+        }
+        return order.getUserId();
     }
 
 }

@@ -85,7 +85,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                     new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            token = jwtUtil.generateToken(userDetails.getUsername());
+            token = jwtUtil.generateToken(userDetails.getUsername(), user.getId());
         } catch (AuthenticationException e){
             LOGGER.warn("login error:{}", e.getMessage());
         }

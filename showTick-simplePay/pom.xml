@@ -6,13 +6,13 @@
 		<groupId>com.qyx</groupId>
 		<artifactId>showTick</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.qyx.showtick</groupId>
-	<artifactId>simplePay</artifactId>
+
+	<artifactId>showTick-simplePay</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>simplePay</name>
-	<description>simplePay</description>
+	<name>showTick-simplePay</name>
+	<description>showTick-simplePay</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -52,6 +52,14 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>none</phase>
+					</execution>
+				</executions>
+				<configuration>
+					<classifier>execute</classifier>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

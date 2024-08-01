@@ -28,9 +28,11 @@ public interface OrderService extends IService<Order> {
     @Transactional
     int cancelOrder(Long orderId);
 
-    IPage<OrderDTO> getOrdersByUsername(String username, int pageNum, int pageSize);
+    IPage<OrderDTO> getOrdersByUsername(Long userId, int pageNum, int pageSize);
 
     @Transactional
     int updateOrderStatus(Long orderId, OrderStatus status);
+
+    Long getUserIdByOrderId(Long orderId);
 
 }

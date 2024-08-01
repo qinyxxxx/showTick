@@ -20,6 +20,7 @@ public class OrderItem implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    private Long userId;
     private Long orderId;
     private Long ticketId;
     private float amount;

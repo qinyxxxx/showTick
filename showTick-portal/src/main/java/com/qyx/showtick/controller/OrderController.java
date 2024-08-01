@@ -6,7 +6,6 @@ import com.qyx.showtick.common.dto.SimPayCreateResponse;
 import com.qyx.showtick.common.dto.SimplePayCreateRequest;
 import com.qyx.showtick.common.entity.Order;
 import com.qyx.showtick.common.entity.Payment;
-import com.qyx.showtick.common.entity.User;
 import com.qyx.showtick.component.JwtUtil;
 import com.qyx.showtick.dto.CreateOrderRequest;
 import com.qyx.showtick.dto.OrderDTO;
@@ -49,8 +48,8 @@ public class OrderController {
     public CommonResult<IPage<OrderDTO>> getUserOrdersByPage(@RequestParam int pageNum,
                                                              @RequestParam int pageSize, HttpServletRequest httpRequest) {
         String token = httpRequest.getHeader(tokenHeader).substring(7);
-        String username = jwtUtil.getUsernameFromToken(token);
-        IPage<OrderDTO> orderIPage = orderService.getOrdersByUsername(username, pageNum, pageSize);
+        Long userId = jwtUtil.getUserIdFromToken(token);
+        IPage<OrderDTO> orderIPage = orderService.getOrdersByUsername(userId, pageNum, pageSize);
         return CommonResult.success(orderIPage);
     }
 
@@ -58,29 +57,41 @@ public class OrderController {
     @ResponseBody
     public CommonResult<Order> createOrder(@RequestBody CreateOrderRequest request, HttpServletRequest httpRequest) {
         String token = httpRequest.getHeader(tokenHeader).substring(7);
-        String username = jwtUtil.getUsernameFromToken(token);
-        Long userId = userService.geUserByUsername(username).getId();
+        Long userId = jwtUtil.getUserIdFromToken(token);
         Order order = orderService.createOrder(request, userId);
         return CommonResult.success(order);
     }
 
+//    @CheckUserId(resourceIdMethod = "getOrderUserId")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
-    public CommonResult<OrderDetailResponse> getOrderDetailById(@PathVariable Long id) {
+    public CommonResult<OrderDetailResponse> getOrderDetailById(@PathVariable Long id, HttpServletRequest httpRequest) {
+        if(!checkUserId(id, httpRequest)){
+            return CommonResult.forbidden(null);
+        }
         OrderDetailResponse response = orderService.getOrderDetailsByOrderId(id);
         return CommonResult.success(response);
     }
 
     @RequestMapping(value = "/{id}/cancel", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult cancelOrder(@PathVariable Long id) {
+    public CommonResult cancelOrder(@PathVariable Long id, HttpServletRequest httpRequest) {
+        if(!checkUserId(id, httpRequest)){
+            return CommonResult.forbidden(null);
+        }
         int count = orderService.cancelOrder(id);
         return CommonResult.success("cancel success");
     }
 
     @RequestMapping(value = "/{id}/pay", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult<SimPayCreateResponse> payOrder(@PathVariable Long id) {
+    public CommonResult<SimPayCreateResponse> payOrder(@PathVariable Long id, HttpServletRequest httpRequest) {
+        if(!checkUserId(id, httpRequest)){
+            return CommonResult.forbidden(null);
+        }
+        String token = httpRequest.getHeader(tokenHeader).substring(7);
+        Long userId = jwtUtil.getUserIdFromToken(token);
+
         // save payment
         Payment payment = paymentService.createPayment(id);
 
@@ -90,10 +101,16 @@ public class OrderController {
         simplePayRequest.setOrderId(payment.getOrderId());
         simplePayRequest.setPaymentMethod(payment.getPaymentMethod());
 
-        SimPayCreateResponse simplePayResponse = simplePayService.createPayment(simplePayRequest);
+        SimPayCreateResponse simplePayResponse = simplePayService.createPayment(simplePayRequest, userId);
 
         // 返回simple pay给的支付链接给前端
         return CommonResult.success(simplePayResponse);
     }
 
+    private boolean checkUserId(Long orderId, HttpServletRequest httpRequest) {
+        String token = httpRequest.getHeader(tokenHeader).substring(7);
+        Long userIdFromToken = jwtUtil.getUserIdFromToken(token);
+        Long userIdFromOrder = orderService.getUserIdByOrderId(orderId);
+        return userIdFromOrder.equals(userIdFromToken);
+    }
 }

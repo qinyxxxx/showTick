@@ -26,6 +26,8 @@ public class SimPaymentTransaction implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    private Long userId;
+
     private Long paymentId;
     private String transactionId; //UUID
     private PaymentStatus transactionStatus;

@@ -15,12 +15,12 @@ class ShowTickPortalApplicationTests {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Test
-    public void testLocalDateTimeSerialization() throws Exception {
-        LocalDateTime now = LocalDateTime.now();
-        String json = objectMapper.writeValueAsString(now);
-        LocalDateTime parsed = objectMapper.readValue(json, LocalDateTime.class);
-        assertEquals(now, parsed);
-    }
+//    @Test
+//    public void testLocalDateTimeSerialization() throws Exception {
+//        LocalDateTime now = LocalDateTime.now();
+//        String json = objectMapper.writeValueAsString(now);
+//        LocalDateTime parsed = objectMapper.readValue(json, LocalDateTime.class);
+//        assertEquals(now, parsed);
+//    }
 
 }

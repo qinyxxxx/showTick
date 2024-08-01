@@ -26,6 +26,8 @@ public class Payment implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    private Long userId;
+
     private Long orderId;
     private PaymentMethod paymentMethod;
     private float amount;

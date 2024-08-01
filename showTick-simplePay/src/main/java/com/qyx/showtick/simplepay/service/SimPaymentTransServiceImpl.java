@@ -40,6 +40,7 @@ public class SimPaymentTransServiceImpl extends ServiceImpl<SimPaymentTransactio
             transaction.setTransactionId(UUID.randomUUID().toString());
             transaction.setTransactionStatus(status);
             transaction.setPaymentId(simPaymentId);
+            transaction.setUserId(simPaymentMapper.selectById(simPaymentId).getUserId());
             paymentTransactionMapper.insert(transaction);
         }
         // update payment status

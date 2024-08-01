@@ -3,6 +3,7 @@ package com.qyx.showtick.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qyx.showtick.common.entity.*;
+import com.qyx.showtick.common.exception.Asserts;
 import com.qyx.showtick.common.mapper.PaymentMapper;
 import com.qyx.showtick.service.OrderService;
 import com.qyx.showtick.service.PaymentService;
@@ -43,6 +44,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment>  imp
         payment.setStatus(PaymentStatus.PENDING);
         payment.setAmount(order.getTotalAmount());
         payment.setOrderId(orderId);
+        payment.setUserId(order.getUserId());
         paymentMapper.insert(payment);
 
         return payment;
@@ -60,8 +62,6 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment>  imp
         payment.setStatus(request.getStatus());
         paymentMapper.updateById(payment);
 
-        System.err.println(payment);
-
         // update order
         if (request.getStatus() != PaymentStatus.COMPLETED){
             System.err.println("not completed");
@@ -78,5 +78,14 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment>  imp
             }
             ticketService.updateTicketStatus(ticket.getId(), TicketStatus.SOLD);
         }
+    }
+
+    @Override
+    public Long getUserIdByPaymentId(Long paymentId) {
+        Payment payment = paymentMapper.selectById(paymentId);
+        if(payment == null){
+            Asserts.fail("no payment found");
+        }
+        return payment.getUserId();
     }
 }

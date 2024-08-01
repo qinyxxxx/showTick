@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public interface SimPaymentService extends IService<SimPayment> {
     @Transactional
-    SimPayCreateResponse createPayment(SimplePayCreateRequest request);
+    SimPayCreateResponse createPayment(SimplePayCreateRequest request, Long userId);
     @Transactional
     void updatePaymentStatus(Long paymentId, PaymentStatus status);
     @Transactional

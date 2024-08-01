@@ -1,6 +1,5 @@
 package com.qyx.showtick.component;
 
-//import com.qyx.showtick.common.service.RedisService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,30 +31,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private UserDetailsService userDetailsService;
-//
-//    @Autowired
-//    private RedisService redisService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         String token = request.getHeader(tokenHeader);
-        if (token != null && token.startsWith(tokenHead)) {
-            token = token.substring(tokenHead.length());
-            String username = jwtUtil.getUsernameFromToken(token);
+        try {
+            if (token != null && token.startsWith(tokenHead)) {
+                token = token.substring(tokenHead.length());
+                String username = jwtUtil.getUsernameFromToken(token);
+                Long userId = jwtUtil.getUserIdFromToken(token);
 
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-//                String redisToken = (String) redisService.getValue(username);
-//                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-                if (!jwtUtil.isTokenExpired(token)) {
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                if (username != null && userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    if (!jwtUtil.isTokenExpired(token)) {
+                        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                        if (userDetails != null) {
+                            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                    userDetails, null, userDetails.getAuthorities());
+                            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                            SecurityContextHolder.getContext().setAuthentication(authentication);
+                        }
+                    }
                 }
             }
+        } catch (Exception e) {
+            logger.error("Failed to authenticate user", e);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return;
         }
+
         chain.doFilter(request, response);
     }
 }

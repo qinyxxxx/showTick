@@ -30,16 +30,17 @@
         <java.version>17</java.version>
     </properties>
     <dependencies>
-<!--        todo-->
-        <dependency>
-            <groupId>com.qyx.showtick</groupId>
-            <artifactId>simplePay</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
 
         <dependency>
             <groupId>com.qyx</groupId>
             <artifactId>showTick-common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <!--        todo-->
+        <dependency>
+            <groupId>com.qyx</groupId>
+            <artifactId>showTick-simplePay</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
