@@ -9,6 +9,8 @@ import com.qyx.showtick.service.OrderService;
 import com.qyx.showtick.service.PaymentService;
 import com.qyx.showtick.service.TicketService;
 import com.qyx.showtick.simplepay.dto.ShowTickNotificationRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ import java.util.List;
  */
 @Service
 public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment>  implements PaymentService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PaymentServiceImpl.class);
 
     @Autowired
     private PaymentMapper paymentMapper;
@@ -37,7 +40,8 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment>  imp
         }
         Order order = orderService.getById(orderId);
         if(order == null){
-            throw new IllegalArgumentException("Order not found");
+            LOGGER.error("Order not found");
+            Asserts.fail("Order not found");
         }
         Payment payment = new Payment();
         payment.setPaymentMethod(PaymentMethod.UNKNOWN);
@@ -46,37 +50,41 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment>  imp
         payment.setOrderId(orderId);
         payment.setUserId(order.getUserId());
         paymentMapper.insert(payment);
-
+        LOGGER.info("Create payment");
         return payment;
     }
 
     @Override
     public void handlePaymentCallBack(ShowTickNotificationRequest request) {
+        LOGGER.info("Start callback");
         Order order = orderService.getById(request.getOrderId());
 
         // update payment
         Payment payment = paymentMapper.selectOne(new QueryWrapper<Payment>().eq("order_id", request.getOrderId()));
         if(payment == null){
-            throw new RuntimeException("error, payment should not be null");
+            LOGGER.error("error, payment should not be null");
+            Asserts.fail("error, payment should not be null");
         }
         payment.setStatus(request.getStatus());
         paymentMapper.updateById(payment);
 
         // update order
         if (request.getStatus() != PaymentStatus.COMPLETED){
-            System.err.println("not completed");
+            LOGGER.warn("not completed");
             return;
         }
 
         orderService.updateOrderStatus(order.getId(), OrderStatus.COMPLETED);
-
+        LOGGER.info("Set order status to completed");
         // update tickets
         List<Ticket> tickets = orderService.getTicketsByOrderId(request.getOrderId());
         for(Ticket ticket : tickets){
             if(ticket.getStatus() != TicketStatus.LOCKED){
-                throw new RuntimeException("ticket status error: " + ticket.getId() + " " + ticket.getStatus());
+                LOGGER.error("ticket status error: " + ticket.getId() + " " + ticket.getStatus());
+                Asserts.fail("ticket status error: " + ticket.getId() + " " + ticket.getStatus());
             }
             ticketService.updateTicketStatus(ticket.getId(), TicketStatus.SOLD);
+            LOGGER.info("Set ticket {} status to sold", ticket.getId());
         }
     }
 

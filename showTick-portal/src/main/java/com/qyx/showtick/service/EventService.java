@@ -11,11 +11,6 @@ import java.util.List;
  */
 public interface EventService extends IService<Event> {
 
-
-    Event getEventById(Long id);
-
-    List<EventDTO> getAllEvents();
-
     List<Event> getTop5Events();
 
 }

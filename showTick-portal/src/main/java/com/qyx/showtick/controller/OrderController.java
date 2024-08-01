@@ -12,9 +12,10 @@ import com.qyx.showtick.dto.OrderDTO;
 import com.qyx.showtick.dto.OrderDetailResponse;
 import com.qyx.showtick.service.OrderService;
 import com.qyx.showtick.service.PaymentService;
-import com.qyx.showtick.service.UserService;
 import com.qyx.showtick.simplepay.service.SimPaymentService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -26,17 +27,19 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/orders")
 public class OrderController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderController.class);
+
     @Value("${jwt.tokenHeader}")
     private String tokenHeader;
+
+    @Value("${jwt.tokenHead}")
+    private String tokenHead;
 
     @Autowired
     private OrderService orderService;
 
     @Autowired
     private PaymentService paymentService;
-
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private SimPaymentService simplePayService;
@@ -47,18 +50,18 @@ public class OrderController {
     @RequestMapping(method = RequestMethod.GET)
     public CommonResult<IPage<OrderDTO>> getUserOrdersByPage(@RequestParam int pageNum,
                                                              @RequestParam int pageSize, HttpServletRequest httpRequest) {
-        String token = httpRequest.getHeader(tokenHeader).substring(7);
-        Long userId = jwtUtil.getUserIdFromToken(token);
+        Long userId = getUserIdFromRequest(httpRequest);
         IPage<OrderDTO> orderIPage = orderService.getOrdersByUsername(userId, pageNum, pageSize);
+        LOGGER.info("Get orders by page success, pageNum: {}, pageSize: {}", pageNum, pageSize);
         return CommonResult.success(orderIPage);
     }
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public CommonResult<Order> createOrder(@RequestBody CreateOrderRequest request, HttpServletRequest httpRequest) {
-        String token = httpRequest.getHeader(tokenHeader).substring(7);
-        Long userId = jwtUtil.getUserIdFromToken(token);
+        Long userId = getUserIdFromRequest(httpRequest);
         Order order = orderService.createOrder(request, userId);
+        LOGGER.info("Create order success");
         return CommonResult.success(order);
     }
 
@@ -67,9 +70,11 @@ public class OrderController {
     @ResponseBody
     public CommonResult<OrderDetailResponse> getOrderDetailById(@PathVariable Long id, HttpServletRequest httpRequest) {
         if(!checkUserId(id, httpRequest)){
+            LOGGER.error("Token and user does not match");
             return CommonResult.forbidden(null);
         }
         OrderDetailResponse response = orderService.getOrderDetailsByOrderId(id);
+        LOGGER.info("Order Detail {}", response);
         return CommonResult.success(response);
     }
 
@@ -77,6 +82,7 @@ public class OrderController {
     @ResponseBody
     public CommonResult cancelOrder(@PathVariable Long id, HttpServletRequest httpRequest) {
         if(!checkUserId(id, httpRequest)){
+            LOGGER.error("Token and user does not match");
             return CommonResult.forbidden(null);
         }
         int count = orderService.cancelOrder(id);
@@ -87,13 +93,14 @@ public class OrderController {
     @ResponseBody
     public CommonResult<SimPayCreateResponse> payOrder(@PathVariable Long id, HttpServletRequest httpRequest) {
         if(!checkUserId(id, httpRequest)){
+            LOGGER.error("Token and user does not match");
             return CommonResult.forbidden(null);
         }
-        String token = httpRequest.getHeader(tokenHeader).substring(7);
-        Long userId = jwtUtil.getUserIdFromToken(token);
+        Long userId = getUserIdFromRequest(httpRequest);
 
         // save payment
         Payment payment = paymentService.createPayment(id);
+        LOGGER.info("Save payment");
 
         // 调用 SimplePay API
         SimplePayCreateRequest simplePayRequest = new SimplePayCreateRequest();
@@ -102,15 +109,19 @@ public class OrderController {
         simplePayRequest.setPaymentMethod(payment.getPaymentMethod());
 
         SimPayCreateResponse simplePayResponse = simplePayService.createPayment(simplePayRequest, userId);
-
+        LOGGER.info("Call simple payment success");
         // 返回simple pay给的支付链接给前端
         return CommonResult.success(simplePayResponse);
     }
 
     private boolean checkUserId(Long orderId, HttpServletRequest httpRequest) {
-        String token = httpRequest.getHeader(tokenHeader).substring(7);
-        Long userIdFromToken = jwtUtil.getUserIdFromToken(token);
+        Long userIdFromToken = getUserIdFromRequest(httpRequest);
         Long userIdFromOrder = orderService.getUserIdByOrderId(orderId);
         return userIdFromOrder.equals(userIdFromToken);
+    }
+
+    private Long getUserIdFromRequest(HttpServletRequest httpRequest){
+        String token = httpRequest.getHeader(tokenHeader).substring(tokenHead.length());
+        return jwtUtil.getUserIdFromToken(token);
     }
 }

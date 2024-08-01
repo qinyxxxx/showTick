@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.mysql.cj.log.Log;
 import com.qyx.showtick.common.entity.*;
 import com.qyx.showtick.common.exception.Asserts;
 import com.qyx.showtick.common.mapper.*;
@@ -11,7 +12,8 @@ import com.qyx.showtick.dto.CreateOrderRequest;
 import com.qyx.showtick.dto.OrderDTO;
 import com.qyx.showtick.dto.OrderDetailResponse;
 import com.qyx.showtick.service.OrderService;
-import com.qyx.showtick.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
  */
 @Service
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>  implements OrderService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Autowired
     private OrderMapper orderMapper;
@@ -35,29 +38,37 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>  implement
     @Autowired
     private EventMapper eventMapper;
 
-    @Autowired
-    private UserService userService;
-
     @Override
     public Order createOrder(CreateOrderRequest request, Long userId) {
+        LOGGER.info("Start create order: {}", request.toString());
+        if(request.getTicketIds().isEmpty()){
+            LOGGER.warn("No tickets to create");
+            return null;
+        }
         float totalAmount = 0.0f;
         List<Ticket> tickets = ticketMapper.selectBatchIds(request.getTicketIds());
-
         // lock the tickets
         for (Ticket ticket : tickets) {
             if (ticket == null || ticket.getStatus() != TicketStatus.AVAILABLE) {
-                throw new IllegalArgumentException("Ticket not available");
+                LOGGER.error("Ticket is null or is not available");
+                Asserts.fail("Ticket is null or is not available");
             }
             totalAmount += ticket.getPrice();
             ticket.setStatus(TicketStatus.LOCKED);
             ticketMapper.updateById(ticket);
+            LOGGER.info("Locked ticket {}", ticket.getId());
         }
+
+        LOGGER.info("Finish locking tickets");
 
         // get event info
         Event event = eventMapper.selectById(request.getEventId());
         if (event.getRemainingTicket() < request.getTicketIds().size()) {
-            throw new RuntimeException("Not enough remaining tickets");
+            LOGGER.error("Not enough remaining tickets{} for event {}", request.getTicketIds().size(), event.getId());
+            Asserts.fail("Not enough remaining tickets");
         }
+
+        LOGGER.info("Event {} has enough remaining tickets", event.getId());
 
         // 创建订单
         Order order = new Order();
@@ -66,13 +77,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>  implement
         order.setStatus(OrderStatus.PENDING);
         order.setEventId(request.getEventId());
         orderMapper.insert(order);
+        LOGGER.info("Create order: {}", order);
 
         // 更新剩余票数和版本号
         event.setRemainingTicket(event.getRemainingTicket() - request.getTicketIds().size());
         int affectedRows = eventMapper.updateWithOptimisticLock(event);
         if (affectedRows == 0) {
-            throw new RuntimeException("Failed to update remaining tickets, please try again");
+            LOGGER.error("Failed to update remaining tickets, please try again");
+            Asserts.fail("Failed to update remaining tickets, please try again");
         }
+        LOGGER.info("Update remaining tickets");
 
         for(Ticket ticket : tickets){
             OrderItem orderItem = new OrderItem();
@@ -81,8 +95,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>  implement
             orderItem.setTicketId(ticket.getId());
             orderItem.setUserId(orderItem.getUserId());
             orderItemMapper.insert(orderItem);
+            LOGGER.info("Insert orderItem: {}", orderItem);
         }
 
+        LOGGER.info("Finish create order");
         return order;
     }
 
@@ -103,47 +119,50 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>  implement
         Order order = orderMapper.selectById(orderId);
         OrderDetailResponse response = new OrderDetailResponse();
         List<OrderItem> orderItems = orderItemMapper.selectList(new QueryWrapper<OrderItem>().eq("order_id", orderId));
+        LOGGER.info("Get orderItems");
         List<Ticket> tickets = getOrderItemsByOrderId(orderId).stream()
                 .map(item -> ticketMapper.selectById(item.getTicketId()))
                 .collect(Collectors.toList());
-        if(tickets.isEmpty()){
-            throw new RuntimeException("tickets should not be empty");
-        }
-        Event event = eventMapper.selectById(order.getEventId());
+        LOGGER.info("Get tickets");
         response.setOrderItems(orderItems);
         response.setTickets(tickets);
         response.setTotalAmount(order.getTotalAmount());
         response.setOrderId(orderId);
         response.setStatus(order.getStatus());
-        response.setEvent(event);
+        response.setEvent(eventMapper.selectById(order.getEventId()));
         return response;
     }
 
     @Override
     public int cancelOrder(Long orderId) {
         Order order = orderMapper.selectById(orderId);
+        LOGGER.info("Start canceling order: {}", order.toString());
         // update tickets status
         List<Ticket> tickets = getTicketsByOrderId(orderId);
         for(Ticket ticket : tickets){
             ticket.setStatus(TicketStatus.AVAILABLE);
             ticketMapper.updateById(ticket);
-        }
-        if(tickets.isEmpty()){
-            throw new RuntimeException("tickets should not be empty!");
+            LOGGER.info("Update ticket {} to available", ticket.getId());
         }
         // update event remaining tickets(with lock)
         Event event = eventMapper.selectById(order.getEventId());
-        event.setRemainingTicket(event.getRemainingTicket() - tickets.size());
+        LOGGER.info("Event {} remaining ticket before: {}", event.getId(), event.getRemainingTicket());
+        event.setRemainingTicket(event.getRemainingTicket() + tickets.size());
         int affectedRows = eventMapper.updateWithOptimisticLock(event);
         if (affectedRows == 0) {
-            throw new RuntimeException("Failed to update remaining tickets, please try again");
+            LOGGER.error("Failed to update remaining tickets");
+            Asserts.fail("Failed to update remaining tickets");
         }
+        LOGGER.info("Event {} remaining ticket after: {}", event.getId(), event.getRemainingTicket());
         // update order status
         order.setStatus(OrderStatus.CANCELLED);
         int count = orderMapper.updateById(order);
+        LOGGER.info("Update order {} status to cancelled", order.getId());
         if(count != 1){
+            LOGGER.error("Failed to update order status with cancel");
             throw new RuntimeException("Failed to update order status with cancel");
         }
+        LOGGER.info("Finish canceling order: {}", order);
         return count;
     }
 

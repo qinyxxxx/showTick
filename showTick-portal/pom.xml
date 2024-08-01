@@ -37,10 +37,9 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
-        <!--        todo-->
         <dependency>
             <groupId>com.qyx</groupId>
-            <artifactId>showTick-simplePay</artifactId>
+            <artifactId>simplePay</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 

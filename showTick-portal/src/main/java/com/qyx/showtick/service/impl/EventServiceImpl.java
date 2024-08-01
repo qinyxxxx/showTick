@@ -3,7 +3,6 @@ package com.qyx.showtick.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qyx.showtick.common.entity.Event;
-import com.qyx.showtick.common.entity.Ticket;
 import com.qyx.showtick.common.mapper.EventMapper;
 import com.qyx.showtick.dto.EventDTO;
 import com.qyx.showtick.service.EventService;
@@ -21,16 +20,6 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     private EventMapper eventMapper;
 
     @Override
-    public Event getEventById(Long id) {
-        return eventMapper.selectById(id);
-    }
-
-    @Override
-    public List<EventDTO> getAllEvents() {
-        return null;
-    }
-
-    @Override
     public List<Event> getTop5Events() {
         QueryWrapper<Event> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderByAsc("remaining_ticket").last("LIMIT 5");
@@ -38,11 +27,5 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         queryWrapper.eq("status", 0);
         return eventMapper.selectList(queryWrapper);
     }
-
-    void test(){
-        Event event = new Event();
-        event.setId(100L);
-    }
-
 
 }

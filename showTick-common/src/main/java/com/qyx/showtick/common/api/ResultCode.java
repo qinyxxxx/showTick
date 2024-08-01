@@ -1,9 +1,12 @@
 package com.qyx.showtick.common.api;
 
+import lombok.Getter;
+
 /**
  * API返回码封装类
  * Created by Yuxin Qin on 7/10/24
  */
+@Getter
 public enum ResultCode implements IErrorCode {
     SUCCESS(200, "Success"),
     FAILED(500, "Internal Error"),
@@ -18,11 +21,4 @@ public enum ResultCode implements IErrorCode {
         this.message = message;
     }
 
-    public long getCode() {
-        return code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
 }

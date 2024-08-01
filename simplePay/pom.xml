@@ -9,10 +9,10 @@
 		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
 
-	<artifactId>showTick-simplePay</artifactId>
+	<artifactId>simplePay</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>showTick-simplePay</name>
-	<description>showTick-simplePay</description>
+	<name>simplePay</name>
+	<description>simplePay</description>
 	<url/>
 	<licenses>
 		<license/>

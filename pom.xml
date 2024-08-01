@@ -37,12 +37,18 @@
         <mybatis-plus-boot-starter.version>3.4.3.4</mybatis-plus-boot-starter.version>
         <jjwt.version>0.9.1</jjwt.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
+        <logstash-logback.version>7.4</logstash-logback.version>
+        <lombok.version>1.18.34</lombok.version>
+        <jakarta.validation.version>3.0.2</jakarta.validation.version>
+        <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <mapstruct-processor.version>1.5.5.Final</mapstruct-processor.version>
+        <logstash-logback.version>7.0</logstash-logback.version>
 
     </properties>
 
     <modules>
         <module>showTick-common</module>
-        <module>showTick-simplePay</module>
+        <module>simplePay</module>
         <module>showTick-auth</module>
         <module>showTick-admin</module>
         <module>showTick-portal</module>
@@ -68,7 +74,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.34</version>
+            <version>${lombok.version}</version>
         </dependency>
 
     </dependencies>
@@ -100,7 +106,7 @@
             <dependency>
                 <groupId>jakarta.validation</groupId>
                 <artifactId>jakarta.validation-api</artifactId>
-                <version>3.0.2</version>
+                <version>${jakarta.validation.version}</version>
             </dependency>
 
             <!-- jaxb兼容 -->
@@ -114,15 +120,21 @@
             <dependency>
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct</artifactId>
-                <version>1.5.5.Final</version>
+                <version>${mapstruct.version}</version>
             </dependency>
 
             <!-- mapstruct -->
             <dependency>
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct-processor</artifactId>
-                <version>1.5.5.Final</version>
+                <version>${mapstruct-processor.version}</version>
                 <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>net.logstash.logback</groupId>
+                <artifactId>logstash-logback-encoder</artifactId>
+                <version>${logstash-logback.version}</version>
             </dependency>
 
         </dependencies>
