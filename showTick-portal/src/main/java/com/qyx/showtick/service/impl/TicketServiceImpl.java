@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qyx.showtick.common.entity.Order;
 import com.qyx.showtick.common.entity.Ticket;
 import com.qyx.showtick.common.entity.TicketStatus;
+import com.qyx.showtick.common.exception.Asserts;
 import com.qyx.showtick.common.mapper.TicketMapper;
 import com.qyx.showtick.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class TicketServiceImpl extends ServiceImpl<TicketMapper, Ticket> impleme
         ticket.setStatus(status);
         int count = ticketMapper.updateById(ticket);
         if(count != 1){
-            throw new RuntimeException("update ticket status failed");
+            Asserts.fail("update ticket status failed");
         }
         return count;
     }

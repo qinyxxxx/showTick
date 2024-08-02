@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.mysql.cj.log.Log;
 import com.qyx.showtick.common.entity.*;
 import com.qyx.showtick.common.exception.Asserts;
 import com.qyx.showtick.common.mapper.*;
@@ -16,6 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +25,7 @@ import java.util.stream.Collectors;
  * Created by Yuxin Qin on 7/25/24
  */
 @Service
-public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>  implements OrderService {
+public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Autowired
@@ -93,7 +95,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>  implement
             orderItem.setOrderId(order.getId());
             orderItem.setAmount(ticket.getPrice());
             orderItem.setTicketId(ticket.getId());
-            orderItem.setUserId(orderItem.getUserId());
+            orderItem.setUserId(userId);
             orderItemMapper.insert(orderItem);
             LOGGER.info("Insert orderItem: {}", orderItem);
         }
@@ -136,14 +138,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>  implement
     @Override
     public int cancelOrder(Long orderId) {
         Order order = orderMapper.selectById(orderId);
-        LOGGER.info("Start canceling order: {}", order.toString());
+        if(order.getStatus() != OrderStatus.PENDING){
+            LOGGER.warn("order is finished");
+            return 0;
+        }
+        LOGGER.info("Start canceling order: {}", orderId);
         // update tickets status
         List<Ticket> tickets = getTicketsByOrderId(orderId);
         for(Ticket ticket : tickets){
             ticket.setStatus(TicketStatus.AVAILABLE);
             ticketMapper.updateById(ticket);
-            LOGGER.info("Update ticket {} to available", ticket.getId());
         }
+        LOGGER.info("Update tickets to available");
         // update event remaining tickets(with lock)
         Event event = eventMapper.selectById(order.getEventId());
         LOGGER.info("Event {} remaining ticket before: {}", event.getId(), event.getRemainingTicket());
@@ -160,9 +166,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>  implement
         LOGGER.info("Update order {} status to cancelled", order.getId());
         if(count != 1){
             LOGGER.error("Failed to update order status with cancel");
-            throw new RuntimeException("Failed to update order status with cancel");
+            Asserts.fail("Failed to update order status with cancel");
         }
-        LOGGER.info("Finish canceling order: {}", order);
+        LOGGER.info("Finish canceling order");
         return count;
     }
 
@@ -202,7 +208,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>  implement
         order.setStatus(status);
         int count = orderMapper.updateById(order);
         if(count != 1){
-            throw new RuntimeException("update order status failed");
+            Asserts.fail("update order status failed");
         }
         return count;
     }
@@ -214,6 +220,58 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>  implement
             Asserts.fail("order not found");
         }
         return order.getUserId();
+    }
+
+    @Override
+    public int cancelTimeoutOrders() {
+        List<Order> timeoutOrders = getTimeOutOrders();
+        if(CollectionUtils.isEmpty(timeoutOrders)){
+            return 0;
+        }
+        for (Order timeoutOrder : timeoutOrders) {
+            // update tickets status
+            List<Ticket> tickets = getTicketsByOrderId(timeoutOrder.getId());
+            for(Ticket ticket : tickets){
+                ticket.setStatus(TicketStatus.AVAILABLE);
+                ticketMapper.updateById(ticket);
+            }
+            LOGGER.info("Update tickets to available");
+            // update event remaining tickets(with lock)
+            Event event = eventMapper.selectById(timeoutOrder.getEventId());
+            LOGGER.info("Event {} remaining ticket before: {}", event.getId(), event.getRemainingTicket());
+            event.setRemainingTicket(event.getRemainingTicket() + tickets.size());
+            int affectedRows = eventMapper.updateWithOptimisticLock(event);
+            if (affectedRows == 0) {
+                LOGGER.error("Failed to update remaining tickets");
+                Asserts.fail("Failed to update remaining tickets");
+            }
+            LOGGER.info("Event {} remaining ticket after: {}", event.getId(), event.getRemainingTicket());
+            // update order status
+            timeoutOrder.setStatus(OrderStatus.CANCELLED);
+            orderMapper.updateById(timeoutOrder);
+            LOGGER.info("Update order {} status to cancelled", timeoutOrder.getId());
+            LOGGER.info("Finish canceling order");
+        }
+        return timeoutOrders.size();
+    }
+
+    @Override
+    public void updateTicketsStatusByOrderId(Long orderId, TicketStatus status) {
+        List<Ticket> tickets = getTicketsByOrderId(orderId);
+        for(Ticket ticket : tickets){
+            ticket.setStatus(status);
+            ticketMapper.updateById(ticket);
+        }
+    }
+
+    public List<Order> getTimeOutOrders(){
+        // 获取当前时间并减去10分钟
+        LocalDateTime tenMinutesAgo = LocalDateTime.now().minusMinutes(10);
+
+        // 查询创建时间超过十分钟且未支付的订单
+        return orderMapper.selectList(new QueryWrapper<Order>()
+                .le("create_time", tenMinutesAgo)
+                .eq("status", OrderStatus.PENDING));
     }
 
 }

@@ -35,4 +35,10 @@ public interface OrderService extends IService<Order> {
 
     Long getUserIdByOrderId(Long orderId);
 
+    @Transactional
+    int cancelTimeoutOrders();
+
+    @Transactional
+    void updateTicketsStatusByOrderId(Long orderId, TicketStatus status);
+
 }
