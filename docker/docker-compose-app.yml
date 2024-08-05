@@ -1,0 +1,128 @@
+services:
+  db:
+    image: mysql
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: show_tick
+    ports:
+      - "3308:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - showTick
+
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6380:6379"
+    networks:
+      - showTick
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.14.3
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xmx512m -Xms512m
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - showTick
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.14.3
+    container_name: logstash
+    volumes:
+      - ../logstash/config:/usr/share/logstash/config
+      - ../logstash/pipeline:/usr/share/logstash/pipeline
+    ports:
+      - "5044:5044"
+      - "9600:9600"
+    environment:
+      - LS_JAVA_OPTS=-Xmx256m -Xms256m
+    depends_on:
+      - elasticsearch
+    networks:
+      - showTick
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.14.3
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - showTick
+
+
+  show-tick-common:
+    build:
+      context: ../showTick-common
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/show_tick
+    networks:
+      - showTick
+    depends_on:
+      - db
+
+  simple-pay:
+    build:
+      context: ../simplePay
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/show_tick
+    networks:
+      - showTick
+    depends_on:
+      - show-tick-common
+
+  show-tick-auth:
+    build:
+      context: ../showTick-auth
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/show_tick
+    networks:
+      - showTick
+    depends_on:
+      - show-tick-common
+
+
+  show-tick-admin:
+    build:
+      context: ../showTick-admin
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/show_tick
+    networks:
+      - showTick
+    depends_on:
+      - show-tick-common
+      - show-tick-auth
+
+
+  show-tick-portal:
+    build:
+      context: ../showTick-portal
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/show_tick
+    networks:
+      - showTick
+    depends_on:
+      - show-tick-common
+      - show-tick-auth
+
+networks:
+  showTick:
+    external: true
+
+volumes:
+  db_data:

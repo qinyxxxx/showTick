@@ -35,3 +35,14 @@ secure:
       - /druid/**
       - /users/sso/**
       - /events/**
+
+logging:
+  file:
+    path: /Users/qinyuxin/workspace/showTick/logs
+
+  level:
+    root: info
+
+logstash:
+  host: localhost
+  enableInnerLog: false
