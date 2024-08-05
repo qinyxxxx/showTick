@@ -61,38 +61,38 @@ services:
       - showTick
 
 
-  show-tick-common:
-    build:
-      context: ../showTick-common
-      dockerfile: Dockerfile
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/show_tick
-    networks:
-      - showTick
-    depends_on:
-      - db
-
-  simple-pay:
-    build:
-      context: ../simplePay
-      dockerfile: Dockerfile
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/show_tick
-    networks:
-      - showTick
-    depends_on:
-      - show-tick-common
-
-  show-tick-auth:
-    build:
-      context: ../showTick-auth
-      dockerfile: Dockerfile
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/show_tick
-    networks:
-      - showTick
-    depends_on:
-      - show-tick-common
+#  show-tick-common:
+#    build:
+#      context: ../showTick-common
+#      dockerfile: Dockerfile
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/show_tick
+#    networks:
+#      - showTick
+#    depends_on:
+#      - db
+#
+#  simple-pay:
+#    build:
+#      context: ../simplePay
+#      dockerfile: Dockerfile
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/show_tick
+#    networks:
+#      - showTick
+#    depends_on:
+#      - show-tick-common
+#
+#  show-tick-auth:
+#    build:
+#      context: ../showTick-auth
+#      dockerfile: Dockerfile
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/show_tick
+#    networks:
+#      - showTick
+#    depends_on:
+#      - show-tick-common
 
 
   show-tick-admin:
@@ -103,9 +103,6 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/show_tick
     networks:
       - showTick
-    depends_on:
-      - show-tick-common
-      - show-tick-auth
 
 
   show-tick-portal:
@@ -116,9 +113,6 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/show_tick
     networks:
       - showTick
-    depends_on:
-      - show-tick-common
-      - show-tick-auth
 
 networks:
   showTick:
