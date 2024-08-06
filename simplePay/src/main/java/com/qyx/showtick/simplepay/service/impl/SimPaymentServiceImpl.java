@@ -13,7 +13,12 @@ import com.qyx.showtick.common.mapper.SimPaymentTransactionMapper;
 import com.qyx.showtick.simplepay.dto.ShowTickNotificationRequest;
 import com.qyx.showtick.simplepay.service.SimPaymentService;
 import com.qyx.showtick.simplepay.service.SimPaymentTransService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -35,6 +40,12 @@ public class SimPaymentServiceImpl extends ServiceImpl<SimPaymentMapper, SimPaym
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Value("${jwt.tokenHeader}")
+    private String tokenHeader;
+
+    @Value("${jwt.tokenHead}")
+    private String tokenHead;
 
     @Override
     public SimPayCreateResponse createPayment(SimplePayCreateRequest request, Long userId) {
@@ -86,17 +97,18 @@ public class SimPaymentServiceImpl extends ServiceImpl<SimPaymentMapper, SimPaym
 
 
     @Override
-    public SimPaymentTransaction processPayment(Long simPaymentId, PaymentMethod paymentMethod, PaymentStatus status) {
+    public SimPaymentTransaction processPayment(Long simPaymentId, PaymentMethod paymentMethod, PaymentStatus status, HttpServletRequest request) {
+        String token = request.getHeader(tokenHeader).substring(tokenHead.length());
         SimPaymentTransaction transaction = transService.createTransaction(simPaymentId, paymentMethod, status);
         SimPayment payment = simPaymentMapper.selectById(simPaymentId);
         // notify show-tick
-        notifyShowTickSystem(payment, transaction);
+        notifyShowTickSystem(payment, transaction, token);
         // return
         return transaction;
     }
 
 
-    private void notifyShowTickSystem(SimPayment simPayment, SimPaymentTransaction transaction) {
+    private void notifyShowTickSystem(SimPayment simPayment, SimPaymentTransaction transaction, String token) {
         ShowTickNotificationRequest notificationRequest = new ShowTickNotificationRequest();
         notificationRequest.setSimPaymentId(simPayment.getId());
         notificationRequest.setTransactionId(transaction.getTransactionId());
@@ -104,6 +116,13 @@ public class SimPaymentServiceImpl extends ServiceImpl<SimPaymentMapper, SimPaym
         notificationRequest.setOrderId(simPayment.getOrderId());
 
         String showTickUrl = "http://localhost:8080/payments/notify"; //todo
-        restTemplate.postForObject(showTickUrl, notificationRequest, Void.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token);
+
+        // Create HttpEntity with headers and body
+        HttpEntity<ShowTickNotificationRequest> requestEntity = new HttpEntity<>(notificationRequest, headers);
+
+        // Send POST request
+        restTemplate.exchange(showTickUrl, HttpMethod.POST, requestEntity, Void.class);
     }
 }

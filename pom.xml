@@ -48,8 +48,8 @@
 
     <modules>
         <module>showTick-common</module>
-        <module>simplePay</module>
         <module>showTick-auth</module>
+        <module>simplePay</module>
         <module>showTick-admin</module>
         <module>showTick-portal</module>
     </modules>

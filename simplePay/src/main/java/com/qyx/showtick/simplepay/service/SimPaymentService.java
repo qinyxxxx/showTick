@@ -7,6 +7,7 @@ import com.qyx.showtick.common.entity.PaymentMethod;
 import com.qyx.showtick.common.entity.PaymentStatus;
 import com.qyx.showtick.common.entity.SimPayment;
 import com.qyx.showtick.common.entity.SimPaymentTransaction;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -21,6 +22,6 @@ public interface SimPaymentService extends IService<SimPayment> {
     void recordTransaction(SimPaymentTransaction transaction);
     SimPayment getPaymentById(Long paymentId);
 
-    SimPaymentTransaction processPayment(Long simPaymentId, PaymentMethod paymentMethod, PaymentStatus status);
+    SimPaymentTransaction processPayment(Long simPaymentId, PaymentMethod paymentMethod, PaymentStatus status, HttpServletRequest request);
 
 }

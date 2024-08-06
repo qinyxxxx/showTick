@@ -1,5 +1,5 @@
 services:
-  db:
+  mysql:
     image: mysql
     container_name: mysql
     environment:
@@ -100,19 +100,26 @@ services:
       context: ../showTick-admin
       dockerfile: Dockerfile
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/show_tick
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/show_tick
     networks:
       - showTick
-
+    depends_on:
+      - mysql
+    ports:
+      - "8082:8080"
 
   show-tick-portal:
     build:
       context: ../showTick-portal
       dockerfile: Dockerfile
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/show_tick
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/show_tick
     networks:
       - showTick
+    depends_on:
+      - mysql
+    ports:
+      - "8080:8080"
 
 networks:
   showTick:

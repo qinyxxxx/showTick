@@ -1,23 +1,23 @@
 spring:
   application:
     name: showtick-admin
-
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/show_tick?characterEncoding=utf-8
-    username: root
-    password: 123456
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
 
 redis:
   database: showtick
   key:
-    user: 'user'
+    user: 'admin'
   expire:
     common: 86400 # 24hours
 
 jwt:
   tokenHeader: Authorization #JWT存储的请求头
-  secret: aOQJk4V5wVsKzfoG9bqaJyKEnwQzZAQ0
+  secret: showTick-admin
   expiration: 86400000
   tokenHead: 'Bearer '
 
@@ -35,6 +35,3 @@ secure:
       - /druid/**
       - /users/sso/**
       - /admin/**
-      - /product/**
-      - /brand/**
-      - /alipay/**
