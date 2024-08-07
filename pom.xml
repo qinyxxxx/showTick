@@ -43,6 +43,9 @@
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <mapstruct-processor.version>1.5.5.Final</mapstruct-processor.version>
         <logstash-logback.version>7.0</logstash-logback.version>
+        <kafka-clients.version>3.7.0</kafka-clients.version>
+        <spring-kafka.version>3.2.1</spring-kafka.version>
+        <fastjson.version>1.2.83</fastjson.version>
 
     </properties>
 
@@ -75,6 +78,12 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>${fastjson.version}</version>
         </dependency>
 
     </dependencies>
@@ -135,6 +144,18 @@
                 <groupId>net.logstash.logback</groupId>
                 <artifactId>logstash-logback-encoder</artifactId>
                 <version>${logstash-logback.version}</version>
+            </dependency>
+
+<!--            <dependency>-->
+<!--                <groupId>org.apache.kafka</groupId>-->
+<!--                <artifactId>kafka-clients</artifactId>-->
+<!--                <version>${kafka-clients.version}</version>-->
+<!--            </dependency>-->
+
+            <dependency>
+                <groupId>org.springframework.kafka</groupId>
+                <artifactId>spring-kafka</artifactId>
+                <version>${spring-kafka.version}</version>
             </dependency>
 
         </dependencies>

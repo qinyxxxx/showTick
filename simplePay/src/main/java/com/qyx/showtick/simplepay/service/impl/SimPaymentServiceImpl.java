@@ -11,6 +11,7 @@ import com.qyx.showtick.common.entity.SimPaymentTransaction;
 import com.qyx.showtick.common.mapper.SimPaymentMapper;
 import com.qyx.showtick.common.mapper.SimPaymentTransactionMapper;
 import com.qyx.showtick.simplepay.dto.ShowTickNotificationRequest;
+import com.qyx.showtick.simplepay.kafka.PaymentResultProducer;
 import com.qyx.showtick.simplepay.service.SimPaymentService;
 import com.qyx.showtick.simplepay.service.SimPaymentTransService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,6 +41,9 @@ public class SimPaymentServiceImpl extends ServiceImpl<SimPaymentMapper, SimPaym
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private PaymentResultProducer paymentProcessProducer;
 
     @Value("${jwt.tokenHeader}")
     private String tokenHeader;
@@ -101,9 +105,11 @@ public class SimPaymentServiceImpl extends ServiceImpl<SimPaymentMapper, SimPaym
         String token = request.getHeader(tokenHeader).substring(tokenHead.length());
         SimPaymentTransaction transaction = transService.createTransaction(simPaymentId, paymentMethod, status);
         SimPayment payment = simPaymentMapper.selectById(simPaymentId);
+
         // notify show-tick
-        notifyShowTickSystem(payment, transaction, token);
-        // return
+        paymentProcessProducer.sendPaymentResultNotification(payment, transaction);
+//        notifyShowTickSystem(payment, transaction, token);
+
         return transaction;
     }
 

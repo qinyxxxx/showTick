@@ -60,51 +60,18 @@ services:
     networks:
       - showTick
 
-
-#  show-tick-common:
-#    build:
-#      context: ../showTick-common
-#      dockerfile: Dockerfile
-#    environment:
-#      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/show_tick
-#    networks:
-#      - showTick
-#    depends_on:
-#      - db
-#
-#  simple-pay:
-#    build:
-#      context: ../simplePay
-#      dockerfile: Dockerfile
-#    environment:
-#      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/show_tick
-#    networks:
-#      - showTick
-#    depends_on:
-#      - show-tick-common
-#
-#  show-tick-auth:
-#    build:
-#      context: ../showTick-auth
-#      dockerfile: Dockerfile
-#    environment:
-#      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/show_tick
-#    networks:
-#      - showTick
-#    depends_on:
-#      - show-tick-common
-
-
   show-tick-admin:
     build:
       context: ../showTick-admin
       dockerfile: Dockerfile
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/show_tick
+      - SPRING_PROFILES_ACTIVE=prod
     networks:
       - showTick
     depends_on:
       - mysql
+      - redis
     ports:
       - "8082:8080"
 
@@ -114,10 +81,12 @@ services:
       dockerfile: Dockerfile
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/show_tick
+      - SPRING_PROFILES_ACTIVE=prod
     networks:
       - showTick
     depends_on:
       - mysql
+      - redis
     ports:
       - "8080:8080"
 

@@ -1,5 +1,5 @@
 # 使用官方 OpenJDK 17 JDK 作为基础镜像
-FROM openjdk:17
+FROM openjdk:17-jdk-slim
 
 # 创建一个目录来存放应用的 jar 文件
 VOLUME /tmp

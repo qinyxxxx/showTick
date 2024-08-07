@@ -1,8 +1,6 @@
-package com.qyx.showtick.simplepay.service;
+package com.qyx.showtick.simplepay.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qyx.showtick.common.entity.PaymentMethod;
 import com.qyx.showtick.common.entity.PaymentStatus;
@@ -10,6 +8,7 @@ import com.qyx.showtick.common.entity.SimPayment;
 import com.qyx.showtick.common.entity.SimPaymentTransaction;
 import com.qyx.showtick.common.mapper.SimPaymentMapper;
 import com.qyx.showtick.common.mapper.SimPaymentTransactionMapper;
+import com.qyx.showtick.simplepay.service.SimPaymentTransService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
