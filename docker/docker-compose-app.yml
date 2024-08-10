@@ -37,7 +37,7 @@ services:
     container_name: logstash
     volumes:
       - ../logstash/config:/usr/share/logstash/config
-      - ../logstash/pipeline:/usr/share/logstash/pipeline
+      - ../logstash/pipeline:/usr/share/logstash/pipeline # todo 路径可能不对
     ports:
       - "5044:5044"
       - "9600:9600"
